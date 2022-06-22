@@ -1,0 +1,58 @@
+/api/v1/films?sort=-imdb_rating
+
+  http request
+  GET /api/v1/films?sort=-imdb_rating&page[size]=50&page[number]=1
+  [
+  {
+    "uuid": "uuid",
+    "title": "str",
+    "imdb_rating": "float"
+  },
+  ...
+  ]
+
+  [
+  {
+    "uuid": "524e4331-e14b-24d3-a156-426614174003",
+    "title": "Ringo Rocket Star and His Song for Yuri Gagarin",
+    "imdb_rating": 9.4
+  },
+  {
+    "uuid": "524e4331-e14b-24d3-a156-426614174003",
+    "title": "Lunar: The Silver Star",
+    "imdb_rating": 9.2
+  },
+  ...
+  ]
+
+
+  ======================
+
+  /api/v1/films?sort=-imdb_rating&filter[genre]=<comedy-uuid>
+
+  http request
+GET /api/v1/films?filter[genre]=<uuid:UUID>&sort=-imdb_rating&page[size]=50&page[number]=1
+[
+{
+  "uuid": "uuid",
+  "title": "str",
+  "imdb_rating": "float"
+},
+...
+]
+
+[
+{
+  "uuid": "524e4331-e14b-24d3-a156-426614174003",
+  "title": "Ringo Rocket Star and His Song for Yuri Gagarin",
+  "imdb_rating": 9.4
+},
+{
+  "uuid": "524e4331-e14b-24d3-a156-426614174003",
+  "title": "Lunar: The Silver Star",
+  "imdb_rating": 9.2
+},
+...
+]
+
+
