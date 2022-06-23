@@ -15,6 +15,31 @@ services:
       - ./postgres/data:/var/lib/postgresql/data/
     networks:
       - internal
+
+  elastic:
+    image: elasticsearch:7.14.0
+    restart: always
+    ports:
+      - "9200:9200"
+    volumes:
+      - ./elastic_index/data:/usr/share/elasticsearch/data
+    networks:
+      - internal
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+#
+#  etl:
+#    build: postgres_to_es
+#    restart: always
+#    env_file:
+#      - postgres_to_es/.env
+#    command: celery -A postgres_to_es.main.celery worker --beat --loglevel=info --logfile=logs/celery.log
+#    networks:
+#      - movies
+#    depends_on:
+#      - redis
+
 #
 #  fastapi:
 #    build: app
@@ -30,18 +55,7 @@ services:
 #    networks:
 #      - internal
 #
-#  elastic:
-#    image: elasticsearch:7.14.0
-#    restart: always
-#    ports:
-#      - "9204:9200"
-#    volumes:
-#      - es_shared_volume:/usr/share/elasticsearch/data
-#    networks:
-#      - internal
-#    environment:
-#      - "discovery.type=single-node"
-#      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+
 #
 #  nginx:
 #    build: nginx
