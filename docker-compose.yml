@@ -1,0 +1,59 @@
+version: '3'
+networks:
+  internal:
+
+services:
+  database:
+    image: postgres:alpine3.15
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      - postgres/.env
+    volumes:
+      - ./postgres/init_data_prod/:/docker-entrypoint-initdb.d/
+      - ./postgres/data:/var/lib/postgresql/data/
+    networks:
+      - internal
+#
+#  fastapi:
+#    build: app
+#    restart: always
+#    command: gunicorn src.main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --reload
+#    ports:
+#      - "8004:8000"
+#    networks:
+#      - internal
+#
+#  redis_cache:
+#    image: redis:6-alpine
+#    networks:
+#      - internal
+#
+#  elastic:
+#    image: elasticsearch:7.14.0
+#    restart: always
+#    ports:
+#      - "9204:9200"
+#    volumes:
+#      - es_shared_volume:/usr/share/elasticsearch/data
+#    networks:
+#      - internal
+#    environment:
+#      - "discovery.type=single-node"
+#      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+#
+#  nginx:
+#    build: nginx
+#    volumes:
+#      - static_volume:/usr/src/app/staticfiles/
+#    restart: always
+#    ports:
+#      - "80:80"
+#    networks:
+#      - internal
+#    depends_on:
+#      - fastapi
+
+volumes:
+  static_volume:
