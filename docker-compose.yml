@@ -41,15 +41,15 @@ services:
       - database
 
 #
-#  fastapi:
+#  app:
 #    build: app
 #    restart: always
 #    command: gunicorn src.main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --reload
 #    ports:
-#      - "8004:8000"
+#      - "8000:8000"
 #    networks:
 #      - internal
-#
+
 #  redis_cache:
 #    image: redis:6-alpine
 #    networks:
