@@ -1,6 +1,6 @@
-curl -X DELETE 'http://0.0.0.0:9200/_all'
+#curl -X DELETE 'http://elastic:9200/_all'
 
-curl -XPUT http://0.0.0.0:9200/genres -H 'Content-Type: application/json' -d '{
+curl -XPUT http://elastic:9200/genres -H 'Content-Type: application/json' -d '{
   "settings": {
     "refresh_interval": "1s",
     "analysis": {
@@ -73,7 +73,7 @@ curl -XPUT http://0.0.0.0:9200/genres -H 'Content-Type: application/json' -d '{
   }
 }'
 
-curl -XPUT http://0.0.0.0:9200/movies -H 'Content-Type: application/json' -d '{
+curl -XPUT http://elastic:9200/movies -H 'Content-Type: application/json' -d '{
   "settings": {
     "refresh_interval": "1s",
     "analysis": {
@@ -194,7 +194,7 @@ curl -XPUT http://0.0.0.0:9200/movies -H 'Content-Type: application/json' -d '{
   }
 }'
 
-curl -XPUT http://0.0.0.0:9200/persons -H 'Content-Type: application/json' -d '{
+curl -XPUT http://elastic:9200/persons -H 'Content-Type: application/json' -d '{
   "settings": {
     "refresh_interval": "1s",
     "analysis": {
