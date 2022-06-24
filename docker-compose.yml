@@ -30,11 +30,10 @@ services:
       - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
 
   etl:
-    build: postgres_to_es
+    build: etl
     restart: always
     env_file:
-      - postgres_to_es/.env
-    command: celery -A postgres_to_es.main.celery worker --beat --loglevel=info --logfile=logs/celery.log
+      - ./etl/app/etl/.env
     networks:
       - internal
     depends_on:
