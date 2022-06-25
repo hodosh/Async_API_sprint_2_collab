@@ -5,9 +5,9 @@ from tests.functional.utils.common import Session, backoff
 
 class ElasticsearchWaiter:
     def __init__(self):
-        self.session = Session(settings.es_host)
+        self.session = Session(f'{settings.es_host.rstrip("/")}:{settings.es_port}')
 
-    @backoff(border_sleep_time=30)
+    @backoff(border_sleep_time=10)
     def wait_for_service_availability(self):
         return self.session.get(url='')
 
