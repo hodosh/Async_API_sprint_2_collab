@@ -2,9 +2,12 @@ from pydantic import BaseSettings, Field
 
 
 class TestSettings(BaseSettings):
-    es_host: str = Field('http://127.0.0.1:9204', env='ELASTIC_HOST')
-    redis_host: str = Field('redis://127.0.0.1:6379', env='REDIS_HOST')
-    api_host: str = Field('http://127.0.0.1:8000', env='API_HOST')
+    es_host: str = Field('http://127.0.0.1', env='ELASTIC_HOST')
+    es_port: str = Field('9204', env='ELASTIC_PORT')
+    redis_host: str = Field('127.0.0.1', env='REDIS_HOST')
+    redis_port: str = Field('6379', env='REDIS_PORT')
+    api_host: str = Field('http://127.0.0.1', env='API_HOST')
+    api_port: str = Field('8000', env='API_PORT')
 
 
 settings = TestSettings()
