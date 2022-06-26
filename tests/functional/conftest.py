@@ -1,7 +1,49 @@
 from pathlib import Path
 import typing as t
+from dataclasses import dataclass
+from multidict import CIMultiDictProxy
 
+from elasticsearch import AsyncElasticsearch
 import pytest
+import aiohttp
+
+from settings import settings
+
+
+@dataclass
+class HTTPResponse:
+    body: dict
+    headers: CIMultiDictProxy[str]
+    status: int
+
+
+@pytest.fixture(scope='session')
+async def es_client():
+    client = AsyncElasticsearch(hosts=f'{settings.es_host.rstrip("/")}:{settings.es_port}')
+    yield client
+    await client.close()
+
+
+@pytest.fixture(scope='session')
+async def session():
+    session = aiohttp.ClientSession()
+    yield session
+    await session.close()
+
+
+@pytest.fixture
+def make_get_request(session):
+    async def inner(method: str, params: t.Optional[dict] = None) -> HTTPResponse:
+        params = params or {}
+        url = f'{settings.api_host.rstrip("/")}:{settings.api_port}/api/v1{method}'
+        async with session.get(url, params=params) as response:
+            return HTTPResponse(
+                body=await response.json(),
+                headers=response.headers,
+                status=response.status,
+            )
+
+    return inner
 
 
 def work_dir_() -> Path:
