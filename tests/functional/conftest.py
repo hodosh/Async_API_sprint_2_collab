@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 import typing as t
 from dataclasses import dataclass
@@ -29,6 +30,11 @@ async def session():
     session = aiohttp.ClientSession()
     yield session
     await session.close()
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    return asyncio.new_event_loop()
 
 
 @pytest.fixture
