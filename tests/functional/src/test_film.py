@@ -58,7 +58,7 @@ class TestFilm:
     @pytest.mark.asyncio
     async def test_film_search_base(self, es_client, make_get_request):
         # Выполнение запроса
-        response = await make_get_request(f'/films/')
+        response = await make_get_request('/films/')
 
         # Проверка результата
         assert response.status == 200
