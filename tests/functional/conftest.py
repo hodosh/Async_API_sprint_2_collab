@@ -34,7 +34,9 @@ async def session():
 
 @pytest.fixture(scope="session")
 def event_loop():
-    return asyncio.new_event_loop()
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest.fixture
