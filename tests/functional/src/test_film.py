@@ -1,6 +1,6 @@
 import pytest
 
-import testdata.results.films as results
+from testdata.movies import results
 from utils.prepare import pre_tests_actions, post_tests_actions
 
 
