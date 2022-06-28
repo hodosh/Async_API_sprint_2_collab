@@ -32,7 +32,7 @@ async def session():
     await session.close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def event_loop():
     loop = asyncio.new_event_loop()
     yield loop
@@ -54,13 +54,8 @@ def make_get_request(session):
     return inner
 
 
-def work_dir_() -> Path:
-    return Path().absolute()
-
-
-@pytest.fixture(scope='session')
 def work_dir() -> Path:
-    return work_dir_()
+    return Path().absolute()
 
 
 @pytest.fixture(scope='session')
