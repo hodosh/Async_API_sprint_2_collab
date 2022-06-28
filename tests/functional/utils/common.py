@@ -2,12 +2,26 @@ import time
 from functools import wraps
 from urllib.parse import urljoin
 
+from elasticsearch import Elasticsearch
 from requests import Session as _Session
+import logging
 
-from tests.functional import logger
+from conftest import work_dir
+from settings import settings
 
 
-def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=10, logger=logger):
+def prepare_es_actions(file_name: str):
+    """
+    Метод для работы с тестовыми данными в Elasticsearch
+    @param file_name: имя файла, где описаны данные и действия, которые с ними надо выполнить
+    """
+    with Elasticsearch(hosts=f'{settings.es_host.rstrip("/")}:{settings.es_port}') as client:
+        with open(work_dir().parent / 'testdata' / file_name, 'r') as f:
+            data = f.read()
+        client.bulk(data)
+
+
+def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=10, logger=logging.getLogger('backoff')):
     """
     Функция для повторного выполнения функции через некоторое время, если возникла ошибка.
     Использует наивный экспоненциальный рост времени повтора (factor) до граничного времени ожидания (border_sleep_time)
