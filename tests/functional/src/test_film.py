@@ -52,3 +52,18 @@ class TestFilm:
         # Проверяем ключи возвращенных фильмов
         assert list(response.body['items'][0].keys()) == ['uuid', 'title', 'imdb_rating']
 
+    @pytest.mark.asyncio
+    async def test_film_search_by_query(self, es_client, make_get_request):
+        pass
+
+    @pytest.mark.asyncio
+    async def test_film_search_by_multiple_query(self, es_client, make_get_request):
+        pass
+
+    @pytest.mark.asyncio
+    async def test_film_search_by_query_fail(self, es_client, make_get_request):
+        pass
+
+    @pytest.mark.asyncio
+    async def test_film_search_pagination(self, es_client, make_get_request):
+        pass
