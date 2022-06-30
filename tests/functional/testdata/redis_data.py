@@ -1,4 +1,4 @@
-cache_data = {
+film_data = {
     'key': 'movies:redis_mock',
     'data': {
         'id': 'redis_mock',

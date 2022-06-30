@@ -1,7 +1,7 @@
 import pytest
 
 from testdata.movies import results
-from testdata.movies.redis_data import cache_data
+from testdata.redis_data import film_data
 from utils.prepare import pre_tests_actions, post_tests_actions
 
 INDEX_NAME = 'test_movies'
@@ -120,9 +120,9 @@ class TestFilm:
     @pytest.mark.asyncio
     async def test_get_film_by_id_from_cache(self, es_client, make_get_request, put_to_redis):
         # кладем напрямую в редис данные, которых нет в эластике
-        put_to_redis(**cache_data)
-        response = await make_get_request(f'/films/{cache_data["key"]}')
+        put_to_redis(**film_data)
+        response = await make_get_request(f'/films/{film_data["key"]}')
 
         # Проверка результата
         assert response.status == 200
-        assert response.body['uuid'] == cache_data['key']
+        assert response.body['uuid'] == film_data['key']
