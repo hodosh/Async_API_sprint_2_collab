@@ -3,19 +3,22 @@ import pytest
 from testdata.movies import results
 from utils.prepare import pre_tests_actions, post_tests_actions
 
+INDEX_NAME = 'test_movies'
+DATA_PATH_NAME = 'movies'
+
 
 class TestFilm:
     @classmethod
     def setup_class(cls):
         # метод, в котором можно определить действия ДО выполнения тестов данного класса
         # например, тут будут создаваться тестовый индекс и загружаться общие для всех тестов тестовые данные
-        pre_tests_actions(index_name='test_movies', data_path_name='movies')
+        pre_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
 
     @classmethod
     def teardown_class(cls):
         # метод, в котором можно определить действия ПОСЛЕ выполнения тестов данного класса
         # например, тут будут удаляться общие для всех тестов тестовые данные (чистим за собой мусор)
-        post_tests_actions(index_name='test_movies', data_path_name='movies')
+        post_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
 
     @pytest.mark.asyncio
     async def test_get_film_by_id_success(self, es_client, make_get_request):
