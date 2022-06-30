@@ -7,6 +7,7 @@ from multidict import CIMultiDictProxy
 from elasticsearch import AsyncElasticsearch
 import pytest
 import aiohttp
+import aioredis
 
 from settings import settings
 
@@ -83,3 +84,11 @@ def copy_lst_files(work_dir):
             )
 
     return _copy_lst_files
+
+
+@pytest.fixture(scope='function')
+def put_to_redis():
+    async def inner(key: str, data: t.Any):
+        with aioredis.create_redis_pool((settings.redis_host, settings.redis_port), minsize=10, maxsize=20) as redis:
+            await redis.set(key, data, expire=60)
+    return inner
