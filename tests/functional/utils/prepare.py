@@ -8,17 +8,18 @@ from conftest import work_dir
 from settings import settings
 
 
-def pre_tests_actions(schema_name: str, data_path_name: str):
+def pre_tests_actions(index_name: str, data_path_name: str):
     data_path = work_dir().parent / 'testdata' / data_path_name
     with Elasticsearch(hosts=f'{settings.es_host.rstrip("/")}:{settings.es_port}') as client:
-        _create_es_schema(schema_name=schema_name, schema_path=data_path / 'schema.json', client=client)
+        _create_es_schema(index_name=index_name, schema_path=data_path / 'schema.json', client=client)
         _prepare_es_actions(file_path=data_path / 'prepare_test_data.json', client=client)
 
 
-def post_tests_actions(data_path_name: str):
+def post_tests_actions(index_name: str, data_path_name: str):
     data_path = work_dir().parent / 'testdata' / data_path_name
     with Elasticsearch(hosts=f'{settings.es_host.rstrip("/")}:{settings.es_port}') as client:
         _prepare_es_actions(file_path=data_path / 'remove_test_data.json', client=client)
+        client.indices.delete(index_name)
 
 
 def _prepare_es_actions(file_path: Path, client):
@@ -32,11 +33,11 @@ def _prepare_es_actions(file_path: Path, client):
     client.bulk(data)
 
 
-def _create_es_schema(schema_name: str, schema_path: Path, client):
+def _create_es_schema(index_name: str, schema_path: Path, client):
     with open(schema_path, 'r') as f:
         mapping = json.load(f)
         try:
-            client.indices.create(index=schema_name, body=mapping)
+            client.indices.create(index=index_name, body=mapping)
         except elasticsearch.exceptions.RequestError as e:
             # схема существует, игнорируем
             if not e.status_code == 400 and 'resource_already_exists_exception' in e.error:
