@@ -1,3 +1,5 @@
+import redis
+
 from data_statemashine import JsonFileStorage, State
 from etl_command import ETLCommand
 from varparser import *
@@ -8,17 +10,14 @@ logger = get_logger()
 
 
 class ETLExtractor(ETLCommand):
-    def __init__(self, task, task_name, command_name):
-        super().__init__(task, task_name, command_name)
+    def __init__(self, task, task_name, command_name, _redis: redis.Redis):
+        super().__init__(task, task_name, command_name, _redis)
         self.log_signature('INIT')
 
         data_node_callable = self.task[command_name]['worker']
         self.data_node = data_node_callable()
         self.data_node.connect()
 
-        json_save_path = Path(sys.argv[0]).parent / Path('_state/etl_state.json')
-        state_file = JsonFileStorage(fr'{json_save_path}')
-        self.state = State(state_file)
         self.modified_last_flag = False
 
     def run(self, data=None):
@@ -44,7 +43,7 @@ class ETLExtractor(ETLCommand):
                 modified_last = data[self.command_name][-1][1]
                 modified_keystore = self.get_unique_key('modified_last')
                 # logger.info(modified_last)
-                self.state.set_state(modified_keystore, str(modified_last))
+                self._redis.set(modified_keystore, str(modified_last))
 
         self.modified_last_flag = False
 
@@ -61,10 +60,11 @@ class ETLExtractor(ETLCommand):
         if query.find('$modified_last') > -1:
             modified_default_value = datetime(1980, 1, 1, 1, 1, 1, 1)
             modified_keystore = self.get_unique_key('modified_last')
-            modified_value = self.state.get_state(modified_keystore,
-                                                  str(modified_default_value.strftime("%Y-%d-%m, %H:%M:%S")))
-            self.modified_last_flag = True
+            modified_value = self._redis.get(modified_keystore)
+            if not modified_value:
+                modified_value = str(modified_default_value.strftime("%Y-%d-%m, %H:%M:%S"))
 
+            self.modified_last_flag = True
             query = vars_parse_last_modified(query, last_modified=modified_value)
 
         if query.find('$list_id') > -1:
