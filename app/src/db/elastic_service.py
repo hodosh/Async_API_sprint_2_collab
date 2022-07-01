@@ -2,7 +2,7 @@ from typing import Optional
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
-from app.src.models.models import ORJSONModel
+from models.models import ORJSONModel
 
 
 class ElasticService:

@@ -2,7 +2,7 @@ import pickle
 
 from aioredis import Redis
 
-from app.src.models.models import ORJSONModel
+from models.models import ORJSONModel
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
 
