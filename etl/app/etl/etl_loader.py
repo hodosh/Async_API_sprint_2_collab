@@ -5,8 +5,8 @@ logger = get_logger()
 
 
 class ETLLoader(ETLCommand):
-    def __init__(self, task, task_name, command_name):
-        super().__init__(task, task_name, command_name)
+    def __init__(self, task, task_name, command_name, _redis):
+        super().__init__(task, task_name, command_name, _redis)
         self.log_signature('INIT')
 
         data_node_callable = self.task[command_name]['worker']

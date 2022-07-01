@@ -14,7 +14,7 @@ class ETLCommand:
     """
 
     @abc.abstractmethod
-    def __init__(self, task, task_name, command_name):
+    def __init__(self, task, task_name, command_name, _redis):
         """
         Для инициализации Команды нужно передать
         task - словарь с параметрами команды
@@ -25,6 +25,7 @@ class ETLCommand:
         self.task_name = task_name
         self.command_name = command_name
         self.command_class = self.__class__.__name__
+        self._redis = _redis
 
 
     @abc.abstractmethod
