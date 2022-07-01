@@ -121,8 +121,9 @@ class TestFilm:
     async def test_get_film_by_id_from_cache(self, es_client, make_get_request, put_to_redis):
         # кладем напрямую в редис данные, которых нет в эластике
         put_to_redis(**film_data)
-        response = await make_get_request(f'/films/{film_data["key"]}')
+        film_uuid = film_data['key']
+        response = await make_get_request(f'/films/{film_uuid}')
 
         # Проверка результата
         assert response.status == 200
-        assert response.body['uuid'] == film_data['key']
+        assert response.body['uuid'] == film_uuid
