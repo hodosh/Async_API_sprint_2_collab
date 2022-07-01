@@ -1,13 +1,12 @@
-from datanode_postgres import DataNodePostgres
 from datanode_es_raw import DataNodeES
-from transform_movies import TransformMovies
-from transform_genres import TransformGenres
-from transform_person import TransformPerson
-from etl_extractor import ETLExtractor
-from etl_transformer import ETLTransformer
-from etl_loader import ETLLoader
+from datanode_postgres import DataNodePostgres
 from etl_enricher import ETLEnricher
-
+from etl_extractor import ETLExtractor
+from etl_loader import ETLLoader
+from etl_transformer import ETLTransformer
+from transform_genres import TransformGenres
+from transform_movies import TransformMovies
+from transform_person import TransformPerson
 
 # Стадии ETL
 STAGES = {
@@ -26,7 +25,6 @@ STAGES = {
     # Загрузка в конечную систему
     'load': ETLLoader
 }
-
 
 # Команды, которые повторяются из задачи в задачу
 # Так как задача решалась в общем случае, без привязки к конкретной БД,

@@ -1,12 +1,9 @@
 import os
-import sys
 
-
-from contextlib import contextmanager
 import psycopg2
 from dotenv import load_dotenv
+from psycopg2 import OperationalError
 from psycopg2.extras import DictCursor
-from psycopg2 import OperationalError, errorcodes, errors, InterfaceError
 
 from setup_logging import *
 
@@ -35,17 +32,16 @@ class PGAdapter:
 
     @classmethod
     def get_connection(cls):
-        dsl = {'dbname': os.environ.get('DB_NAME'),
-               'user': os.environ.get('DB_USER'),
-               'password': os.environ.get('DB_PASSWORD'),
-               'host': os.environ.get('DB_HOST', '127.0.0.1'),
-               'port': os.environ.get('DB_PORT', 5432)
-               }
+        dsl = {
+            'dbname': os.environ.get('DB_NAME'),
+            'user': os.environ.get('DB_USER'),
+            'password': os.environ.get('DB_PASSWORD'),
+            'host': os.environ.get('DB_HOST', '127.0.0.1'),
+            'port': os.environ.get('DB_PORT', 5432)
+        }
         try:
             cls.connection = psycopg2.connect(**dsl, cursor_factory=DictCursor)
-
         except OperationalError as err:
-            # set the connection to 'None' in case of error
-            pass
+            logging.error('psycopg2.Error: %s' % (' '.join(err.args)))
 
         return cls.connection

@@ -1,15 +1,19 @@
-from datanode import DataNode
-import os
-import sys
-import requests
 import json
+import os
+
 import backoff
+import requests
 from dotenv import load_dotenv
 
+from datanode import DataNode
 from setup_logging import *
 
 logger = get_logger()
 load_dotenv()
+
+
+def backoff_handler(details):
+    logger.warning("Elasticsearch - Backing off {wait:0.1f} seconds after {tries} tries ".format(**details))
 
 
 class DataNodeES(DataNode):
@@ -63,10 +67,7 @@ class DataNodeES(DataNode):
                 logger.info("SKIP DataNodeES - no data")
                 return
 
-    def backoff_hdlr(details):
-        logger.warning("Elasticsearch - Backing off {wait:0.1f} seconds after {tries} tries ".format(**details))
-
-    @backoff.on_exception(backoff.expo, (requests.HTTPError, requests.ConnectionError), on_backoff=backoff_hdlr)
+    @backoff.on_exception(backoff.expo, (requests.HTTPError, requests.ConnectionError), on_backoff=backoff_handler)
     def es_post_query(self, url, headers, data):
         response = requests.post(url, headers=headers, data=data)
         return response

@@ -141,6 +141,7 @@ etl/app/etl/_state/etl_state.json
 /.idea/vcs.xml
 /.idea/.gitignore
 
-# ignore storage data
-/postgres/data
-/elastic_index/data
+
+#  database data
+postgres/data/
+elastic_index/data
