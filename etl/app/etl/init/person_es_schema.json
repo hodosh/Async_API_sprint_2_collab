@@ -54,16 +54,16 @@
           }
         }
       },
-      "role": {
-        "type": "text",
-        "analyzer": "ru_en"
-      },
-      "film_ids": {
+      "film_roles": {
         "type": "nested",
         "dynamic": "strict",
         "properties": {
           "id": {
             "type": "keyword"
+          },
+          "name": {
+            "type": "text",
+            "analyzer": "ru_en"
           }
         }
       }

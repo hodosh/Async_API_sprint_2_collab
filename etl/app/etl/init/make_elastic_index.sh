@@ -1,24 +1,6 @@
-Создание индекса
+curl -X DELETE 'http://0.0.0.0:9200/_all'
 
-curl -XPUT http://127.0.0.1:9200/table -H 'Content-Type: application/json' -d '{
-    "mappings": {
-        "properties": {
-            "text_field": {"type": "keyword"},
-            "number": {"type": "long"}
-        }
-    }
-}'
-
-Очистка всех индексов
-curl -X DELETE 'http://localhost:9200/_all'
-
-
-
-===========
-
-GENRES
-
-curl -XPUT http://127.0.0.1:9200/genres -H 'Content-Type: application/json' -d '{
+curl -XPUT http://0.0.0.0:9200/genres -H 'Content-Type: application/json' -d '{
   "settings": {
     "refresh_interval": "1s",
     "analysis": {
@@ -91,12 +73,7 @@ curl -XPUT http://127.0.0.1:9200/genres -H 'Content-Type: application/json' -d '
   }
 }'
 
-
-
-MOVIES
-
-
-curl -XPUT http://127.0.0.1:9200/movies -H 'Content-Type: application/json' -d '{
+curl -XPUT http://0.0.0.0:9200/movies -H 'Content-Type: application/json' -d '{
   "settings": {
     "refresh_interval": "1s",
     "analysis": {
@@ -146,9 +123,7 @@ curl -XPUT http://127.0.0.1:9200/movies -H 'Content-Type: application/json' -d '
       "imdb_rating": {
         "type": "float"
       },
-      "genre": {
-        "type": "keyword"
-      },
+
       "title": {
         "type": "text",
         "analyzer": "ru_en",
@@ -159,19 +134,6 @@ curl -XPUT http://127.0.0.1:9200/movies -H 'Content-Type: application/json' -d '
         }
       },
       "description": {
-        "type": "text",
-        "analyzer": "ru_en"
-      },
-
-      "director": {
-        "type": "text",
-        "analyzer": "ru_en"
-      },
-      "actors_names": {
-        "type": "text",
-        "analyzer": "ru_en"
-      },
-      "writers_names": {
         "type": "text",
         "analyzer": "ru_en"
       },
@@ -232,12 +194,7 @@ curl -XPUT http://127.0.0.1:9200/movies -H 'Content-Type: application/json' -d '
   }
 }'
 
-
-
-PERSON
-
-
-curl -XPUT http://127.0.0.1:9200/person -H 'Content-Type: application/json' -d '{
+curl -XPUT http://0.0.0.0:9200/persons -H 'Content-Type: application/json' -d '{
   "settings": {
     "refresh_interval": "1s",
     "analysis": {
@@ -293,16 +250,16 @@ curl -XPUT http://127.0.0.1:9200/person -H 'Content-Type: application/json' -d '
           }
         }
       },
-      "role": {
-        "type": "text",
-        "analyzer": "ru_en"
-      },
-      "film_ids": {
+      "film_roles": {
         "type": "nested",
         "dynamic": "strict",
         "properties": {
           "id": {
             "type": "keyword"
+          },
+          "name": {
+            "type": "text",
+            "analyzer": "ru_en"
           }
         }
       }
