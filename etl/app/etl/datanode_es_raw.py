@@ -64,7 +64,7 @@ class DataNodeES(DataNode):
 
                 return response
             else:
-                logger.info("SKIP DataNodeES - no data")
+                # logger.info("SKIP DataNodeES - no data")
                 return
 
     @backoff.on_exception(backoff.expo, (requests.HTTPError, requests.ConnectionError), on_backoff=backoff_handler)

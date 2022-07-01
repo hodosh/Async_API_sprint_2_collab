@@ -28,4 +28,5 @@ COPY . .
 #ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
 # run app
+CMD [ "python", "app/etl/app_setup.py"]
 CMD [ "python", "app/etl/app.py"]

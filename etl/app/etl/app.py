@@ -38,7 +38,7 @@ class ETLApp:
             # перебираем цепочки задач
             for task_batch in self.pipeline:
                 counter = counter + 1
-                logger.info(f"\n\nLOOP CYCLE {counter} \n\n")
+                # logger.info(f"\n\nLOOP CYCLE {counter} \n\n")
 
                 data = {}
                 task_complete_flag = True
@@ -65,7 +65,7 @@ class ETLApp:
                         task_batch[command_key].rollback(data=data)
 
                 # пауза между командами
-                time.sleep(0.2)
+                time.sleep(1)
 
 
 if __name__ == '__main__':

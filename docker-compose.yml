@@ -53,6 +53,9 @@ services:
     restart: always
     env_file:
       - ./etl/app/etl/.env
+    environment:
+      - REDIS_HOST=redis
+      - DB_HOST=database
     networks:
       - etl
       - api
