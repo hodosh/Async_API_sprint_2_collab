@@ -1,20 +1,11 @@
-from functools import lru_cache
 from typing import Optional
-from typing import Any
 
-from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
-from fastapi import Depends
-
-from db.elastic import get_elastic
-from db.redis import get_redis
-from models.models import Film
-from models.models import ORJSONModel
-from db.elastic_query_builder import QueryBuilder
+from app.src.models.models import ORJSONModel
 
 
-class ElasticService():
+class ElasticService:
     def __init__(self, elastic: AsyncElasticsearch, elastic_index: str, model: ORJSONModel):
         self.elastic = elastic
         self.elastic_index = elastic_index
@@ -23,7 +14,7 @@ class ElasticService():
     # получение документа по ID
     async def get_by_id(self, item_id: str) -> Optional[ORJSONModel]:
         try:
-            doc = await self.elastic.get(self.elastic_index, item_id)
+            doc = await self.elastic.get(index=self.elastic_index, id=item_id)
         except NotFoundError:
             return None
         return self.model(**doc['_source'])

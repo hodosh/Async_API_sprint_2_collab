@@ -15,8 +15,8 @@ DEBUG = os.environ.get('DEBUG', False) == 'True'
 REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
 
-HOST = os.environ.get('ES_HOST', '127.0.0.1')
-PORT = os.environ.get('ES_PORT', 9200)
+ES_HOST = os.environ.get('ES_HOST', '127.0.0.1')
+ES_PORT = os.environ.get('ES_PORT', 9200)
 # ES_URL = f"http://{str(HOST)}:{PORT}/movies"
 
 ES_INDEXES = {
@@ -24,11 +24,10 @@ ES_INDEXES = {
     'genres': 'genres_es_schema.json',
     'persons': 'person_es_schema.json'
 }
-print(ES_INDEXES)
 
 
 def setup():
-    with es_context(hosts=[{'host': HOST, 'port': PORT}]) as es, redis_context(
+    with es_context(hosts=[{'host': ES_HOST, 'port': ES_PORT}]) as es, redis_context(
             host=REDIS_HOST, port=REDIS_PORT) as redis:
         if DEBUG:
             redis.flushdb()
@@ -49,4 +48,5 @@ def setup():
 
 
 if __name__ == '__main__':
+    logger.info('App setup indices.')
     setup()

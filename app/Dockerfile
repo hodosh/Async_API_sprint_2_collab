@@ -73,7 +73,7 @@ RUN chown -R app:app /home/app
 # FIX - need to grant propper permissions - don't work
 USER app
 
-#CMD gunicorn main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --reload
+CMD ['python', 'gunicorn', 'main:app', '--workers', '1', '--worker-class', 'uvicorn.workers.UvicornWorker', '--bind', '0.0.0.0:8000', '--reload']
 # set permissions  - don't work?
 # RUN chmod 755 $APP_HOME/*
 

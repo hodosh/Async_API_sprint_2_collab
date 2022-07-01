@@ -1,17 +1,12 @@
 from http import HTTPStatus
-
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 from typing import Optional
 
-from api.v1.utility import validate_order_field, FIELDS_TO_ORDER
-from services.service_locator import get_film_service, get_genre_service, get_person_service
-from services.movie_service import MovieService
-
+from app.src.api.v1.utility import validate_order_field, FIELDS_TO_ORDER
+from app.src.api.v1.view_models import Film, FilmShort, FilmMid
+from fastapi import APIRouter, Depends, HTTPException
 from models.models import init_from
-
-from models.models import Film as FilmModel
-from api.v1.view_models import GenreShort, PersonShort, Film, FilmShort, FilmMid
+from services.movie_service import MovieService
+from services.service_locator import get_film_service
 
 router = APIRouter()
 

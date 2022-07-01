@@ -12,4 +12,4 @@ RUN sed -i 's/\r$//g'  $APP_HOME/entrypoint.sh
 RUN chmod +x  $APP_HOME/entrypoint.sh
 
 # run entrypoint.prod.sh
-ENTRYPOINT ["/home/es/entrypoint.sh"]
+#ENTRYPOINT ["/home/es/entrypoint.sh"]
