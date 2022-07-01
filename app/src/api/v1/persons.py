@@ -27,7 +27,7 @@ async def person_details(person_id: str, person_service: MovieService = Depends(
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found')
 
-    send_person = convert_person(person)
+    send_person = init_from(Person, person)
     return send_person
 
 
@@ -46,7 +46,7 @@ async def person_list(page_size: Optional[int] = 50,
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found')
 
-    result = [convert_person(person) for person in persons]
+    result = [init_from(Person, person)  for person in persons]
     return result
 
 
