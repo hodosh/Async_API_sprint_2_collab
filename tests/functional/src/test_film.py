@@ -24,7 +24,7 @@ class TestFilm:
     @pytest.mark.asyncio
     async def test_get_film_by_id_success(self, es_client, make_get_request):
         # Выполнение запроса
-        film_id = '111111-111111-111111-111111'
+        film_id = '111111-000000-000000-000000'
         response = await make_get_request(f'/films/{film_id}')
 
         # Проверка результата
@@ -50,68 +50,53 @@ class TestFilm:
         # Проверка результата
         assert response.status == 200
         # Проверяем, что возвращается список фильмов
-        assert isinstance(response.body['items'], list)
-        assert len(response.body['items']) > 0
+        assert isinstance(response.body, list)
+        assert len(response.body) > 0
         # Проверяем ключи возвращенных фильмов
-        assert list(response.body['items'][0].keys()) == ['uuid', 'title', 'imdb_rating']
+        assert list(response.body[0].keys()) == ['id', 'title', 'imdb_rating']
 
     @pytest.mark.asyncio
     async def test_film_search_by_empty_query_success(self, es_client, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/films/search')
 
-        # Проверка результата
-        assert response.status == 200
-        # todo доделать тест
+        # Проверка результата (query обязателен)
+        assert response.status == 404
+        assert response.body == {'detail': 'film not found'}
 
     @pytest.mark.asyncio
     async def test_film_search_by_query_success(self, es_client, make_get_request):
         # Выполнение запроса
-        response = await make_get_request('/films/search?query=Star')
+        response = await make_get_request('/films/search/?query=Star')
 
         # Проверка результата
         assert response.status == 200
-        items = response.body['items']
+        items = response.body
         # Проверяем, что возвращается список фильмов
         assert isinstance(items, list)
         assert len(items) > 0
         # Проверяем ключи возвращенных фильмов
-        assert list(items[0].keys()) == ['uuid', 'title', 'imdb_rating']
+        assert list(items[0].keys()) == ['id', 'title', 'imdb_rating', 'description']
         # Проверяем, что во всех ответах есть значение из запроса
         assert len(items) == len([item for item in items if 'Star' in item['title']])
 
     @pytest.mark.asyncio
     async def test_film_search_by_query_fail(self, es_client, make_get_request):
         # Выполнение запроса
-        response = await make_get_request('/films/search?query=_+-*')
+        response = await make_get_request('/films/search/?query=_+-*')
 
         # Проверка результата
         assert response.status == 404
         assert response.body == {'detail': 'film not found'}
 
     @pytest.mark.asyncio
-    async def test_film_search_by_multiple_query(self, es_client, make_get_request):
-        # Выполнение запроса
-        response = await make_get_request('/films/search?query=Star&?query=Czars')
-
-        # Проверка результата
-        assert response.status == 200
-        items = response.body['items']
-        # Проверяем, что возвращается список фильмов
-        assert isinstance(items, list)
-        assert len(items) > 0
-        # Проверяем ключи возвращенных фильмов
-        assert list(items[0].keys()) == ['uuid', 'title', 'imdb_rating']
-        # Проверяем, что во всех ответах есть значение из запроса
-        assert len(items) == len([item for item in items if 'Star' in item['title'] and 'Czars' in item['title']])
-
-    @pytest.mark.asyncio
     async def test_film_search_pagination(self, es_client, make_get_request):
-        # todo сделать данные для пагинации
+        # TODO доделать!
         # Выполнение запроса
-        response = await make_get_request('/films/search?page=1&size=5')
+        response = await make_get_request('/films/search/?query=a&page_size=50&page_number=1')
 
         # Проверка результата
+        print(response)
         assert response.status == 200
         assert len(response.body['page']) == 1
         assert len(response.body['size']) == 5
@@ -119,6 +104,7 @@ class TestFilm:
 
     @pytest.mark.asyncio
     async def test_get_film_by_id_from_cache(self, es_client, make_get_request, put_to_redis):
+        # TODO доделать!
         # кладем напрямую в редис данные, которых нет в эластике
         put_to_redis(**film_data)
         film_uuid = film_data['key']
