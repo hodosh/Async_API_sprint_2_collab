@@ -1,8 +1,7 @@
 from functools import lru_cache
-from typing import Optional
 
 from aioredis import Redis
-from elasticsearch import AsyncElasticsearch, NotFoundError
+from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 
 from db.elastic import get_elastic
@@ -33,4 +32,3 @@ def get_person_service(
         elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> MovieService:
     return MovieService(redis, elastic, 'persons', Person)
-

@@ -1,13 +1,5 @@
-from http import HTTPStatus
-
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 from typing import Optional
 
-# from services.films2 import FilmService, get_film_service
-from models.models import Film as FilmModel
-from models.models import Person as PersonModel
-from models.models import Genre as GenreModel
 from models.models import ORJSONModel
 
 
