@@ -1,8 +1,8 @@
 from typing import Any
+from typing import Optional
 
 import orjson
 from pydantic import BaseModel
-from typing import Optional
 
 
 def orjson_dumps(v: Any, *, default: Any) -> str:

@@ -34,7 +34,7 @@ class ETLExtractor(ETLCommand):
             return True
 
         except ValueError as err:
-            logger.warning("DB Error")
+            logger.warning(f"DB Error: {err}")
             return False
 
     def commit(self, data=None):
