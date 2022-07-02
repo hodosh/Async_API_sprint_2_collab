@@ -57,6 +57,16 @@ class TestFilm:
         assert list(response.body[0].keys()) == ['id', 'title', 'imdb_rating']
 
     @pytest.mark.asyncio
+    async def test_film_search_sort_by_imdb_rating_success(self, make_get_request):
+        # Выполнение запроса
+        response = await make_get_request('/films/?sort=-imdb_rating')
+
+        # Проверка результата
+        assert response.status == 200
+        rating_list = [item['imdb_rating'] for item in response.body]
+        assert rating_list == sorted(rating_list, reverse=True)
+
+    @pytest.mark.asyncio
     async def test_film_search_by_empty_query_success(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/films/search')
