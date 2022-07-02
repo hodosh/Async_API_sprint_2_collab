@@ -12,7 +12,7 @@ ENV PYTHONUNBUFFERED 1
 ENV PYTHONPATH "$APP_HOME"
 
 # install psycopg2 dependencies
-RUN apt-get update && apt-get -y install libpq-dev gcc
+RUN apt-get update && apt-get -y install libpq-dev gcc && apt-get -y install curl
 
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt --no-cache-dir
