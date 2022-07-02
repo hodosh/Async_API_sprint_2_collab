@@ -19,7 +19,8 @@ class TestFilm:
     def teardown_class(cls):
         # метод, в котором можно определить действия ПОСЛЕ выполнения тестов данного класса
         # например, тут будут удаляться общие для всех тестов тестовые данные (чистим за собой мусор)
-        post_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
+        # post_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
+        pass
 
     @pytest.mark.asyncio
     async def test_get_film_by_id_success(self, make_get_request):
@@ -103,17 +104,36 @@ class TestFilm:
         assert response.body == {'detail': 'film not found'}
 
     @pytest.mark.asyncio
-    async def test_film_search_pagination(self, make_get_request):
-        # TODO доделать!
+    async def test_film_search_pagination_success(self, make_get_request):
         # Выполнение запроса
-        response = await make_get_request('/films/search/?query=a&page_size=50&page_number=1')
+        response = await make_get_request('/films/search/?query=page&page_size=5&page_number=1')
 
         # Проверка результата
-        print(response)
         assert response.status == 200
-        assert len(response.body['page']) == 1
-        assert len(response.body['size']) == 5
-        assert len(response.body['items']) == 5
+        assert len(response.body) == 5
+        assert all(['page' in item['title'] for item in response.body])
+
+    @pytest.mark.asyncio
+    async def test_film_search_pagination_wrong_page_fail(self, make_get_request):
+        # Выполнение запроса
+        response = await make_get_request('/films/search/?query=page&page_size=5&page_number=100')
+
+        # Проверка результата
+        assert response.status == 404
+        assert response.body == {'detail': 'film not found'}
+
+    @pytest.mark.asyncio
+    async def test_film_search_pagination_wrong_condition_fail(self, make_get_request):
+        # Выполнение запроса
+        response = await make_get_request('/films/search/?query=page&page_size=AAAA&page_number=100')
+
+        # Проверка результата
+        assert response.status == 422
+        assert response.body == {'detail': [{
+            'loc': ['query', 'page_size'],
+            'msg': 'value is not a valid integer',
+            'type': 'type_error.integer',
+        }]}
 
     @pytest.mark.asyncio
     async def test_get_film_by_id_from_cache(self, make_get_request, put_to_redis):
