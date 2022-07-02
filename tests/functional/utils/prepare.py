@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from time import sleep
 
 import elasticsearch
 from elasticsearch import Elasticsearch
@@ -16,6 +17,7 @@ def pre_tests_actions(index_name: str, data_path_name: str):
     with Elasticsearch(hosts=f'{settings.es_host.rstrip("/")}:{settings.es_port}') as client:
         _create_es_schema(index_name=index_name, schema_path=data_path / 'schema.json', client=client)
         _prepare_es_actions(file_path=data_path / 'prepare_test_data.json', client=client)
+    sleep(1)
 
 
 def post_tests_actions(index_name: str, data_path_name: str):
