@@ -1,0 +1,10 @@
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000000" } }
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000001" } }
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000002" } }
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000003" } }
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000004" } }
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000005" } }
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000006" } }
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000007" } }
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000008" } }
+{ "delete" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000009" } }

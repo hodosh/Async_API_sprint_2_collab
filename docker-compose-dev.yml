@@ -4,8 +4,9 @@ services:
   redis:
     image: redis:6.2.6
     restart: always
-    expose:
-      - '6379'
+    container_name: redis
+    ports:
+      - "6379:6379"
     command: redis-server --save 20 1 --loglevel warning
     volumes:
       - cache:/data
@@ -29,9 +30,9 @@ services:
   elastic:
     image: elasticsearch:7.17.4
     restart: always
-    container_name: elasticsearch
-    expose:
-      - "9200"
+    container_name: elastic
+    ports:
+      - "9200:9200"
     volumes:
       - ./elastic_index/data:/usr/share/elasticsearch/data
     networks:
@@ -97,6 +98,19 @@ services:
     networks:
       - api
 
+  tests:
+    build: tests/functional
+    env_file:
+      - ./tests/functional/.env
+    networks:
+      - api
+      - etl
+    volumes:
+      - ./tests/functional/results:/results
+    entrypoint: >
+      sh -c "python3 utils/wait_for_es.py
+      && python3 utils/wait_for_redis.py
+      && pytest src --html=results/report.html"
 
   nginx:
     image: nginx:1.21.6
