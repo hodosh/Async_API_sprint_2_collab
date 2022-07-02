@@ -97,7 +97,6 @@ services:
       - "8004:8000"
     networks:
       - api
-    image: fastapi-image
 
   tests:
     build: tests/functional
@@ -106,10 +105,12 @@ services:
     networks:
       - api
       - etl
+    volumes:
+      - ./tests/functional/results:/results
     entrypoint: >
       sh -c "python3 utils/wait_for_es.py
       && python3 utils/wait_for_redis.py
-      && pytest src"
+      && pytest src --html=results/report.html"
 
   nginx:
     image: nginx:1.21.6
