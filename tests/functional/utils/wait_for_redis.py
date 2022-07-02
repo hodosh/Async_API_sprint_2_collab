@@ -1,8 +1,8 @@
-from tests.functional import logger
-from tests.functional.settings import settings
-from tests.functional.utils.common import backoff
-
 from redis import Redis
+
+from settings import settings
+from utils import logger
+from utils.common import backoff
 
 
 class RedisWaiter:
