@@ -65,6 +65,19 @@ class TestFilm:
         assert response.body == {'detail': 'film not found'}
 
     @pytest.mark.asyncio
+    async def test_film_search_query_required_field_fail(self, make_get_request):
+        # Выполнение запроса
+        response = await make_get_request('/films/search/?')
+
+        # Проверка результата
+        assert response.status == 422
+        assert response.body == {'detail': [{
+            'loc': ['query', 'query'],
+            'msg': 'field required',
+            'type': 'value_error.missing',
+        }]}
+
+    @pytest.mark.asyncio
     async def test_film_search_by_query_success(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/films/search/?query=Star')
