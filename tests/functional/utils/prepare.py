@@ -8,18 +8,18 @@ from settings import settings
 
 
 def work_dir() -> Path:
-    return Path().absolute()
+    return Path(__file__).parent.parent.resolve()
 
 
 def pre_tests_actions(index_name: str, data_path_name: str):
-    data_path = work_dir().parent / 'testdata' / data_path_name
+    data_path = work_dir() / 'testdata' / data_path_name
     with Elasticsearch(hosts=f'{settings.es_host.rstrip("/")}:{settings.es_port}') as client:
         _create_es_schema(index_name=index_name, schema_path=data_path / 'schema.json', client=client)
         _prepare_es_actions(file_path=data_path / 'prepare_test_data.json', client=client)
 
 
 def post_tests_actions(index_name: str, data_path_name: str):
-    data_path = work_dir().parent / 'testdata' / data_path_name
+    data_path = work_dir() / 'testdata' / data_path_name
     with Elasticsearch(hosts=f'{settings.es_host.rstrip("/")}:{settings.es_port}') as client:
         _prepare_es_actions(file_path=data_path / 'remove_test_data.json', client=client)
         client.indices.delete(index_name)
