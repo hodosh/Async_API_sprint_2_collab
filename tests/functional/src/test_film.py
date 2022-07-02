@@ -22,7 +22,7 @@ class TestFilm:
         post_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
 
     @pytest.mark.asyncio
-    async def test_get_film_by_id_success(self, es_client, make_get_request):
+    async def test_get_film_by_id_success(self, make_get_request):
         # Выполнение запроса
         film_id = '111111-000000-000000-000000'
         response = await make_get_request(f'/films/{film_id}')
@@ -34,7 +34,7 @@ class TestFilm:
         assert response.body == results.film_by_id_result
 
     @pytest.mark.asyncio
-    async def test_get_not_existing_film_fail(self, es_client, make_get_request):
+    async def test_get_not_existing_film_fail(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request(f'/films/FAKE')
 
@@ -43,7 +43,7 @@ class TestFilm:
         assert response.body == {'detail': 'film not found'}
 
     @pytest.mark.asyncio
-    async def test_film_search_base_success(self, es_client, make_get_request):
+    async def test_film_search_base_success(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/films/')
 
@@ -56,7 +56,7 @@ class TestFilm:
         assert list(response.body[0].keys()) == ['id', 'title', 'imdb_rating']
 
     @pytest.mark.asyncio
-    async def test_film_search_by_empty_query_success(self, es_client, make_get_request):
+    async def test_film_search_by_empty_query_success(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/films/search')
 
@@ -65,7 +65,7 @@ class TestFilm:
         assert response.body == {'detail': 'film not found'}
 
     @pytest.mark.asyncio
-    async def test_film_search_by_query_success(self, es_client, make_get_request):
+    async def test_film_search_by_query_success(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/films/search/?query=Star')
 
@@ -81,7 +81,7 @@ class TestFilm:
         assert len(items) == len([item for item in items if 'Star' in item['title']])
 
     @pytest.mark.asyncio
-    async def test_film_search_by_query_fail(self, es_client, make_get_request):
+    async def test_film_search_by_query_fail(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/films/search/?query=_+-*')
 
@@ -90,7 +90,7 @@ class TestFilm:
         assert response.body == {'detail': 'film not found'}
 
     @pytest.mark.asyncio
-    async def test_film_search_pagination(self, es_client, make_get_request):
+    async def test_film_search_pagination(self, make_get_request):
         # TODO доделать!
         # Выполнение запроса
         response = await make_get_request('/films/search/?query=a&page_size=50&page_number=1')
@@ -103,7 +103,7 @@ class TestFilm:
         assert len(response.body['items']) == 5
 
     @pytest.mark.asyncio
-    async def test_get_film_by_id_from_cache(self, es_client, make_get_request, put_to_redis):
+    async def test_get_film_by_id_from_cache(self, make_get_request, put_to_redis):
         # TODO доделать!
         # кладем напрямую в редис данные, которых нет в эластике
         put_to_redis(**film_data)
