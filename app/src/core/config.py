@@ -20,3 +20,7 @@ ES_PORT = int(os.getenv('ES_PORT', 9200))
 # Корень проекта
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Индексы (необходимо уметь задавать для тестов)
+MOVIES_INDEX = os.getenv('MOVIES_INDEX', 'movies')
+GENRES_INDEX = os.getenv('GENRES_INDEX', 'genres')
+PERSONS_INDEX = os.getenv('PERSONS_INDEX', 'persons')
