@@ -30,8 +30,8 @@ services:
     image: elasticsearch:7.17.4
     restart: always
     container_name: elasticsearch
-    expose:
-      - "9200"
+    ports:
+      - "9200:9200"
     volumes:
       - ./elastic_index/data:/usr/share/elasticsearch/data
     networks:
