@@ -96,7 +96,17 @@ services:
       - "8004:8000"
     networks:
       - api
+    image: fastapi-image
 
+  tests:
+    build: tests/functional
+    env_file:
+      - ./tests/functional/.env
+#    entrypoint: >
+#      sh -c "pip install -r /tests/functional/requirements.txt
+#      && python3 /tests/functional/utils/wait_for_es.py
+#      && python3 /tests/functional/utils/wait_for_redis.py
+#      && pytest /tests/functional/src"
 
   nginx:
     image: nginx:1.21.6
