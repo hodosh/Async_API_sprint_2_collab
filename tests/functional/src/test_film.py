@@ -1,3 +1,4 @@
+import elasticsearch
 import pytest
 
 from testdata.movies import results
@@ -19,8 +20,7 @@ class TestFilm:
     def teardown_class(cls):
         # метод, в котором можно определить действия ПОСЛЕ выполнения тестов данного класса
         # например, тут будут удаляться общие для всех тестов тестовые данные (чистим за собой мусор)
-        # post_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
-        pass
+        post_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
 
     @pytest.mark.asyncio
     async def test_get_film_by_id_success(self, make_get_request):
@@ -136,13 +136,17 @@ class TestFilm:
         }]}
 
     @pytest.mark.asyncio
-    async def test_get_film_by_id_from_cache(self, make_get_request, put_to_redis):
-        # TODO доделать!
+    async def test_get_film_by_id_from_cache(self, make_get_request, put_to_redis, es_client):
         # кладем напрямую в редис данные, которых нет в эластике
-        put_to_redis(**film_data)
-        film_uuid = film_data['key']
+        await put_to_redis(**film_data)
+        film_uuid = '111111-000000-000000-000010'
         response = await make_get_request(f'/films/{film_uuid}')
 
         # Проверка результата
         assert response.status == 200
-        assert response.body['uuid'] == film_uuid
+        assert response.body['id'] == film_uuid
+
+        # проверим, что данных нет в эластике
+        with pytest.raises(elasticsearch.exceptions.NotFoundError) as e:
+            await es_client.get(index=INDEX_NAME, id=film_uuid)
+        assert e.value.args[0] == 404
