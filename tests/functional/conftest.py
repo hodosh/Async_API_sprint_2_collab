@@ -55,10 +55,6 @@ def make_get_request(session):
     return inner
 
 
-def work_dir() -> Path:
-    return Path().absolute()
-
-
 @pytest.fixture(scope='session')
 def tmp_path_session(request, tmp_path_factory):
     from _pytest.tmpdir import _mk_tmp

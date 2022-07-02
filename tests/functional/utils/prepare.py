@@ -4,8 +4,11 @@ from pathlib import Path
 import elasticsearch
 from elasticsearch import Elasticsearch
 
-from conftest import work_dir
 from settings import settings
+
+
+def work_dir() -> Path:
+    return Path().absolute()
 
 
 def pre_tests_actions(index_name: str, data_path_name: str):
