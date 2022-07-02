@@ -1,16 +1,13 @@
 from http import HTTPStatus
-
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException
 
-from services.service_locator import get_film_service, get_genre_service, get_person_service
-from services.movie_service import MovieService
-from models.models import init_from
-
+from api.v1.view_models import FilmShort
 from api.v1.view_models import Genre, GenreShort
-from api.v1.view_models import Film, FilmShort
+from models.models import init_from
+from services.movie_service import MovieService
+from services.service_locator import get_film_service, get_genre_service
 
 router = APIRouter()
 

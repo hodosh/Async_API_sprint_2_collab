@@ -40,7 +40,7 @@ class DataNodeES(DataNode):
         for odd in data:
             odd_json = json.dumps(odd)
             query_string = odd_json
-            logger.info(odd_json)
+            # logger.info(odd_json)
 
             response = requests.post(f"{self.ES_SERVER}/movies/_doc/", headers=headers, data=query_string)
             logger.info(response.text)
@@ -51,7 +51,7 @@ class DataNodeES(DataNode):
                 logger.info("RUN DataNodeES -push bulk")
                 bulk_query = ''
                 for odd in data:
-                    even_json = '{"index": {"_index": "'+ self.es_index + '", "_id": "' + odd['id'] + '"}}\n'
+                    even_json = '{"index": {"_index": "' + self.es_index + '", "_id": "' + odd['id'] + '"}}\n'
                     odd_json = json.dumps(odd)
                     bulk_query = bulk_query + even_json + odd_json + '\n'
 

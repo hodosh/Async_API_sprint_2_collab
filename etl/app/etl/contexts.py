@@ -13,7 +13,7 @@ def backoff_handler(details):
 
 @backoff.on_exception(backoff.expo, (requests.HTTPError, requests.ConnectionError), on_backoff=backoff_handler)
 @contextmanager
-def es_context(**kwargs):
+def es_context(**kwargs) -> Elasticsearch:
     es = Elasticsearch(**kwargs)
     try:
         yield es
