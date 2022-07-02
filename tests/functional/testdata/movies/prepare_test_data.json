@@ -1,4 +1,4 @@
-{ "index" : { "_index" : "movies", "_id" : "111111-000000-000000-000000" } }
+{ "index" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000000" } }
 {"id" : "111111-000000-000000-000000", "imdb_rating" : 8.6, "title" : "Star Czars", "description" : "bla-bla-bla", "genres" : [{"id" : "222222-000000-000000-000000", "name" : "Reality-TV"}], "directors" : [], "actors" : [{"id" : "333333-000000-000000-000000", "name" : "Dominic C. Skinner"}], "writers" : []}
-{ "index" : { "_index" : "movies", "_id" : "111111-000000-000000-000001" } }
+{ "index" : { "_index" : "test_movies", "_id" : "111111-000000-000000-000001" } }
 {"id" : "111111-000000-000000-000001", "imdb_rating" : 8.6, "title" : "Spark wars", "description" : "bla-bla-bla", "genres" : [{"id" : "222222-000000-000000-000001", "name" : "Action"}], "directors" : [], "actors" : [{"id" : "333333-000000-000000-000001", "name" : "Mark Famill"}], "writers" : []}
