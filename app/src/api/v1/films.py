@@ -4,7 +4,6 @@ from typing import Optional
 from api.v1.utility import validate_order_field, FIELDS_TO_ORDER
 from api.v1.view_models import Film, FilmShort, FilmMid
 from fastapi import APIRouter, Depends, HTTPException
-from models.models import init_from
 from services.movie_service import MovieService
 from services.service_locator import get_film_service
 

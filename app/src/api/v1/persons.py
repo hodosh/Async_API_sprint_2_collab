@@ -4,7 +4,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 
 from api.v1.view_models import FilmShort, Person
-from models.models import init_from
 from services.movie_service import MovieService
 from services.service_locator import get_film_service, get_person_service
 
