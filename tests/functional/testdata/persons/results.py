@@ -16,3 +16,11 @@ person_by_id_result = {
         },
     ],
 }
+
+person_detailed_info = [
+  {
+    "id": "111111-222222-000000-000000",
+    "title": "Star Czars",
+    "imdb_rating": 8.6
+  }
+]
