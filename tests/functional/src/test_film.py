@@ -75,6 +75,30 @@ class TestFilm:
         assert rating_list == sorted(rating_list, reverse=True)
 
     @pytest.mark.asyncio
+    async def test_film_search_filter_by_genre_success(self, make_get_request):
+        # Выполнение запроса
+        response = await make_get_request('/films/?filter_genre=222222-000000-000000-000000')
+
+        # Проверка результата
+        assert response.status == 200
+        assert len(response.body) == 1
+        assert response.body.pop()['genres'] == [
+            {
+                "id": "222222-000000-000000-000000",
+                "name": "Reality-TV"
+            }
+        ]
+
+    @pytest.mark.asyncio
+    async def test_film_search_filter_by_genre_fail(self, make_get_request):
+        # Выполнение запроса
+        response = await make_get_request('/films/?filter_genre=FAKE')
+
+        # Проверка результата
+        assert response.status == 404
+        assert response.body == {'detail': 'film not found'}
+
+    @pytest.mark.asyncio
     async def test_film_search_by_empty_query_success(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/films/search')
