@@ -41,7 +41,9 @@ def _prepare_es_actions(file_path: Path, client):
     """
     with open(file_path, 'r') as f:
         data = f.read()
-    client.bulk(data)
+    result = client.bulk(data)
+    if result['errors'] is True:
+        raise RuntimeError(f'Something went wrong: {result}')
 
 
 def _create_es_schema(index_name: str, schema_path: Path, client):
