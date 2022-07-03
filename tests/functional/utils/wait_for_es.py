@@ -1,6 +1,6 @@
-from tests.functional import logger
-from tests.functional.settings import settings
-from tests.functional.utils.common import Session, backoff
+from settings import settings
+from utils import logger
+from utils.common import Session, backoff
 
 
 class ElasticsearchWaiter:

@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 import typing as t
 from dataclasses import dataclass
@@ -6,6 +7,7 @@ from multidict import CIMultiDictProxy
 from elasticsearch import AsyncElasticsearch
 import pytest
 import aiohttp
+import aioredis
 
 from settings import settings
 
@@ -31,6 +33,13 @@ async def session():
     await session.close()
 
 
+@pytest.fixture(scope='session')
+def event_loop():
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
+
+
 @pytest.fixture
 def make_get_request(session):
     async def inner(method: str, params: t.Optional[dict] = None) -> HTTPResponse:
@@ -44,15 +53,6 @@ def make_get_request(session):
             )
 
     return inner
-
-
-def work_dir_() -> Path:
-    return Path().absolute()
-
-
-@pytest.fixture(scope='session')
-def work_dir() -> Path:
-    return work_dir_()
 
 
 @pytest.fixture(scope='session')
@@ -80,3 +80,12 @@ def copy_lst_files(work_dir):
             )
 
     return _copy_lst_files
+
+
+@pytest.fixture(scope='function')
+def put_to_redis():
+    async def inner(key: t.Union[str, bytes], data: t.Union[str, bytes]):
+        redis = await aioredis.create_redis_pool((settings.redis_host, settings.redis_port), minsize=10, maxsize=20)
+        await redis.set(key, data, expire=60)
+
+    return inner
