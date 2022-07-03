@@ -29,7 +29,8 @@ async def es_client():
 
 @pytest.fixture(scope='session')
 async def session():
-    session = aiohttp.ClientSession()
+    connector = aiohttp.TCPConnector(force_close=True)
+    session = aiohttp.ClientSession(connector=connector)
     yield session
     await session.close()
 
