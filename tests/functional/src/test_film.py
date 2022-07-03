@@ -20,7 +20,8 @@ class TestFilm:
     def teardown_class(cls):
         # метод, в котором можно определить действия ПОСЛЕ выполнения тестов данного класса
         # например, тут будут удаляться общие для всех тестов тестовые данные (чистим за собой мусор)
-        post_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
+        # post_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
+        pass
 
     @pytest.mark.asyncio
     async def test_get_film_by_id_success(self, make_get_request):
@@ -163,7 +164,7 @@ class TestFilm:
     async def test_get_film_by_id_from_cache(self, make_get_request, put_to_redis, es_client):
         # кладем напрямую в редис данные, которых нет в эластике
         await put_to_redis(**film_data)
-        film_uuid = '111111-000000-000000-000010'
+        film_uuid = film_data['key']
         response = await make_get_request(f'/films/{film_uuid}')
 
         # Проверка результата

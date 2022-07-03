@@ -1,4 +1,5 @@
 import asyncio
+import json
 from pathlib import Path
 import typing as t
 from dataclasses import dataclass
@@ -84,8 +85,8 @@ def copy_lst_files(work_dir):
 
 @pytest.fixture(scope='function')
 def put_to_redis():
-    async def inner(key: t.Union[str, bytes], data: t.Union[str, bytes]):
+    async def inner(key: t.Union[str, bytes], data: t.Dict[t.AnyStr, t.Any]):
         redis = await aioredis.create_redis_pool((settings.redis_host, settings.redis_port), minsize=10, maxsize=20)
-        await redis.set(key, data, expire=60)
+        await redis.set(key, json.dumps(data), expire=60)
 
     return inner
