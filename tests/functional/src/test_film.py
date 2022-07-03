@@ -54,7 +54,14 @@ class TestFilm:
         assert isinstance(response.body, list)
         assert len(response.body) > 0
         # Проверяем ключи возвращенных фильмов
-        assert list(response.body[0].keys()) == ['id', 'title', 'imdb_rating']
+        assert list(response.body[0].keys()) == ['id',
+                                                 'imdb_rating',
+                                                 'title',
+                                                 'description',
+                                                 'genres',
+                                                 'directors',
+                                                 'actors',
+                                                 'writers']
 
     @pytest.mark.asyncio
     async def test_film_search_sort_by_imdb_rating_success(self, make_get_request):
@@ -100,7 +107,14 @@ class TestFilm:
         assert isinstance(items, list)
         assert len(items) > 0
         # Проверяем ключи возвращенных фильмов
-        assert list(items[0].keys()) == ['id', 'title', 'imdb_rating', 'description']
+        assert list(items[0].keys()) == ['id',
+                                         'imdb_rating',
+                                         'title',
+                                         'description',
+                                         'genres',
+                                         'directors',
+                                         'actors',
+                                         'writers']
         # Проверяем, что во всех ответах есть значение из запроса
         assert len(items) == len([item for item in items if 'Star' in item['title']])
 
