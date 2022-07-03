@@ -39,3 +39,19 @@ person_data = {
         ],
     },
 }
+
+genre_data = {
+    'key': '333333-000000-000000-redis',
+    'data': {
+        'id': '333333-000000-000000-redis',
+        'name': 'Action',
+        'film_ids': [
+            {
+                'id': 'e5a21648-59b1-4672-ac3b-867bcd64b6ea',
+            },
+            {
+                'id': 'c8f57f93-b02a-40d4-ba55-9600cceddd7e',
+            },
+        ],
+    },
+}
