@@ -1,12 +1,10 @@
 import elasticsearch
 import pytest
 
+from constants import MOVIES_DATA_PATH_NAME, MOVIES_INDEX_NAME
 from testdata.movies import results
 from testdata.redis_data import film_data
 from utils.prepare import pre_tests_actions, post_tests_actions
-
-INDEX_NAME = 'test_movies'
-DATA_PATH_NAME = 'movies'
 
 
 class TestFilm:
@@ -14,13 +12,13 @@ class TestFilm:
     def setup_class(cls):
         # метод, в котором можно определить действия ДО выполнения тестов данного класса
         # например, тут будут создаваться тестовый индекс и загружаться общие для всех тестов тестовые данные
-        pre_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
+        pre_tests_actions(data_path_name=MOVIES_DATA_PATH_NAME)
 
     @classmethod
     def teardown_class(cls):
         # метод, в котором можно определить действия ПОСЛЕ выполнения тестов данного класса
         # например, тут будут удаляться общие для всех тестов тестовые данные (чистим за собой мусор)
-        post_tests_actions(index_name=INDEX_NAME, data_path_name=DATA_PATH_NAME)
+        post_tests_actions(data_path_name=MOVIES_DATA_PATH_NAME)
 
     @pytest.mark.asyncio
     async def test_get_film_by_id_success(self, make_get_request):
@@ -196,5 +194,5 @@ class TestFilm:
 
         # проверим, что данных нет в эластике
         with pytest.raises(elasticsearch.exceptions.NotFoundError) as e:
-            await es_client.get(index=INDEX_NAME, id=film_uuid)
+            await es_client.get(index=MOVIES_INDEX_NAME, id=film_uuid)
         assert e.value.args[0] == 404
