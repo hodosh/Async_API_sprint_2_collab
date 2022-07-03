@@ -4,7 +4,6 @@ from typing import Optional
 from api.v1.utility import validate_order_field, FIELDS_TO_ORDER
 from api.v1.view_models import Film, FilmShort, FilmMid
 from fastapi import APIRouter, Depends, HTTPException
-from models.models import init_from
 from services.movie_service import MovieService
 from services.service_locator import get_film_service
 
@@ -22,8 +21,8 @@ async def film_details(film_id: str, film_service: MovieService = Depends(get_fi
     if not film:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='film not found')
 
-    return init_from(Film,film)
-
+    # return init_from(Film,film)
+    return Film.parse_obj(film)
 
 @router.get(
     '/',
@@ -55,7 +54,7 @@ async def film_list(sort: Optional[str] = '-imdb_rating',
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='film not found')
 
-    return [init_from(FilmShort, film) for film in films]
+    return [Film.parse_obj(film) for film in films]
 
 
 @router.get(
@@ -75,4 +74,4 @@ async def film_list(query: Optional[str],
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='film not found')
 
-    return [init_from(FilmMid, film) for film in films]
+    return [Film.parse_obj(film) for film in films]

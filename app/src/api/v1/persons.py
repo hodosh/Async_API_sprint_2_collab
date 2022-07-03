@@ -4,7 +4,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 
 from api.v1.view_models import FilmShort, Person
-from models.models import init_from
 from services.movie_service import MovieService
 from services.service_locator import get_film_service, get_person_service
 
@@ -23,8 +22,7 @@ async def person_details(person_id: str, person_service: MovieService = Depends(
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found')
 
-    send_person = init_from(Person, person)
-    return send_person
+    return Person.parse_obj(person)
 
 
 # Внедряем PersonService с помощью Depends(get_film_service)
@@ -42,8 +40,7 @@ async def person_list(page_size: Optional[int] = 50,
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found')
 
-    result = [init_from(Person, person)  for person in persons]
-    return result
+    return [Person.parse_obj(person) for person in persons]
 
 
 # Внедряем PersonService с помощью Depends(get_film_service)
@@ -64,8 +61,7 @@ async def person_list(query: Optional[str],
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found')
 
-    result = [init_from(Person, person) for person in persons]
-    return result
+    return [Person.parse_obj(person) for person in persons]
 
 
 @router.get(
@@ -81,5 +77,4 @@ async def film_list(person_id: Optional[str] = None,
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='film not found')
 
-    result = [init_from(FilmShort, film) for film in films]
-    return result
+    return [FilmShort.parse_obj(film) for film in films]
