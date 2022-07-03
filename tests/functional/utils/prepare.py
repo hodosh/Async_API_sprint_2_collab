@@ -5,6 +5,7 @@ from time import sleep
 import elasticsearch
 from elasticsearch import Elasticsearch
 
+from constants import INDEX_PATHNAME
 from settings import settings
 
 
@@ -12,19 +13,24 @@ def work_dir() -> Path:
     return Path(__file__).parent.parent.resolve()
 
 
-def pre_tests_actions(index_name: str, data_path_name: str):
-    data_path = work_dir() / 'testdata' / data_path_name
+def pre_tests_actions(data_path_name: str):
+    data_path = work_dir() / 'testdata'
     with Elasticsearch(hosts=f'{settings.es_host.rstrip("/")}:{settings.es_port}') as client:
-        _create_es_schema(index_name=index_name, schema_path=data_path / 'schema.json', client=client)
-        _prepare_es_actions(file_path=data_path / 'prepare_test_data.json', client=client)
-    sleep(1)
+        # create all schemas
+        for index_name, pathname in INDEX_PATHNAME.items():
+            _create_es_schema(index_name=index_name, schema_path=data_path / pathname / 'schema.json', client=client)
+        _prepare_es_actions(file_path=data_path / data_path_name / 'prepare_test_data.json', client=client)
+    # sleep to wait data appearance
+    sleep(2)
 
 
-def post_tests_actions(index_name: str, data_path_name: str):
+def post_tests_actions(data_path_name: str):
     data_path = work_dir() / 'testdata' / data_path_name
     with Elasticsearch(hosts=f'{settings.es_host.rstrip("/")}:{settings.es_port}') as client:
         _prepare_es_actions(file_path=data_path / 'remove_test_data.json', client=client)
-        client.indices.delete(index_name)
+        # remove all schemas
+        for index_name in INDEX_PATHNAME.keys():
+            client.indices.delete(index_name)
 
 
 def _prepare_es_actions(file_path: Path, client):
