@@ -1,7 +1,9 @@
+import elasticsearch
 import pytest
 
 from constants import PERSONS_DATA_PATH_NAME, PERSONS_INDEX_NAME
 from testdata.persons import results
+from testdata.redis_data import person_data
 from utils.prepare import pre_tests_actions, post_tests_actions
 
 
@@ -16,8 +18,7 @@ class TestPerson:
     def teardown_class(cls):
         # метод, в котором можно определить действия ПОСЛЕ выполнения тестов данного класса
         # например, тут будут удаляться общие для всех тестов тестовые данные (чистим за собой мусор)
-        # post_tests_actions(data_path_name=PERSONS_DATA_PATH_NAME)
-        pass
+        post_tests_actions(data_path_name=PERSONS_DATA_PATH_NAME)
 
     @pytest.mark.asyncio
     async def test_get_person_by_id_success(self, make_get_request):
@@ -148,3 +149,19 @@ class TestPerson:
         # Проверка результата
         assert response.status == 404
         assert response.body == {'detail': 'film not found'}
+
+    @pytest.mark.asyncio
+    async def test_get_person_by_id_from_cache(self, make_get_request, put_to_redis, es_client):
+        # кладем напрямую в редис данные, которых нет в эластике
+        await put_to_redis(**person_data)
+        person_id = person_data['key']
+        response = await make_get_request(f'/persons/{person_id}')
+
+        # Проверка результата
+        assert response.status == 200
+        assert response.body['id'] == person_id
+
+        # проверим, что данных нет в эластике
+        with pytest.raises(elasticsearch.exceptions.NotFoundError) as e:
+            await es_client.get(index=PERSONS_INDEX_NAME, id=person_id)
+        assert e.value.args[0] == 404
