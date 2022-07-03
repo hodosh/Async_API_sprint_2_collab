@@ -1,16 +1,9 @@
-from functools import lru_cache
-from typing import Optional
-
 import pickle
+
 from aioredis import Redis
-from elasticsearch import AsyncElasticsearch, NotFoundError
-from fastapi import Depends
+import orjson
 
-from db.elastic import get_elastic
-from db.redis import get_redis
-from models.models import Film
 from models.models import ORJSONModel
-
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
 
@@ -21,14 +14,26 @@ class RedisService:
         self.model = model
 
     async def set(self, key: str, item: ORJSONModel):
-        key_pickled = pickle.dumps(key, 0).decode()
-        pickled_item = pickle.dumps(item, 0).decode()
-        await self.redis.set(key_pickled, pickled_item, expire=FILM_CACHE_EXPIRE_IN_SECONDS)
+        item_dump = item.json()
+        await self.redis.set(key, item_dump, expire=FILM_CACHE_EXPIRE_IN_SECONDS)
 
     async def get(self, key: str):
-        key_pickled = pickle.dumps(key, 0).decode()
-        pickled_item = await self.redis.get(key_pickled)
-        if not pickled_item:
+        item_dump = await self.redis.get(key)
+        if not item_dump:
             return None
 
-        return pickle.loads(pickled_item)
+        return orjson.loads(item_dump)
+
+    async def set_list(self, key: str, items: list[ORJSONModel]):
+        items_dump = [item.json() for item in items]
+        items_dump = orjson.dumps(items_dump)
+        await self.redis.set(str(key), items_dump, expire=FILM_CACHE_EXPIRE_IN_SECONDS)
+
+    async def get_list(self, key: str):
+        item_dump = await self.redis.get(str(key))
+        if not item_dump:
+            return None
+        items_json = orjson.loads(item_dump)
+        items_obj = [orjson.loads(item) for item in items_json]
+
+        return items_obj

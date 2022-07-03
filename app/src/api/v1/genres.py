@@ -1,16 +1,12 @@
 from http import HTTPStatus
-
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException
 
-from services.service_locator import get_film_service, get_genre_service, get_person_service
-from services.movie_service import MovieService
-from models.models import init_from
-
+from api.v1.view_models import FilmShort
 from api.v1.view_models import Genre, GenreShort
-from api.v1.view_models import Film, FilmShort
+from services.movie_service import MovieService
+from services.service_locator import get_film_service, get_genre_service
 
 router = APIRouter()
 
@@ -27,8 +23,7 @@ async def genre_details(genre_id: str,
     if not genre:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Genre not found')
 
-    send_genre = init_from(Genre, genre)
-    return send_genre
+    return Genre.parse_obj(genre)
 
 
 @router.get(
@@ -41,8 +36,7 @@ async def genre_list(genre_service: MovieService = Depends(get_genre_service)) -
     if not genres:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Genres not found')
 
-    result = [init_from(GenreShort, genre) for genre in genres]
-    return result
+    return [GenreShort.parse_obj(genre) for genre in genres]
 
 
 @router.get(
@@ -62,6 +56,4 @@ async def film_list(genre_id: Optional[str] = None,
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='film not found')
 
-    result = [init_from(FilmShort, film) for film in films]
-
-    return result
+    return [FilmShort.parse_obj(film) for film in films]

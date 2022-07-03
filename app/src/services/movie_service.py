@@ -1,20 +1,12 @@
-from functools import lru_cache
 from typing import Optional
 
 from aioredis import Redis
-from elasticsearch import AsyncElasticsearch, NotFoundError
-from fastapi import Depends
+from elasticsearch import AsyncElasticsearch
 
-from db.elastic import get_elastic
-from db.redis import get_redis
-from models.models import Film
-from models.models import ORJSONModel
 from db.elastic_query_builder import QueryBuilder
 from db.elastic_service import ElasticService
-
-
 from db.redis_service import RedisService
-from db.elastic_service import ElasticService
+from models.models import ORJSONModel
 
 
 class MovieService:
@@ -39,13 +31,13 @@ class MovieService:
         return item
 
     async def get_by_query(self, query_body: str) -> Optional[list[ORJSONModel]]:
-        items = await self.redis_service.get(query_body)
+        items = await self.redis_service.get_list(query_body)
         if not items:
             items = await self.elastic_service.get_by_query(query_body)
             if not items:
                 return None
 
-            await self.redis_service.set(query_body, items)
+            await self.redis_service.set_list(query_body, items)
 
         return items
 

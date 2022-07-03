@@ -6,8 +6,8 @@ BATCH_SIZE = 100
 
 
 class ETLEnricher(ETLExtractor):
-    def __init__(self, task, task_name, command_name):
-        super().__init__(task, task_name, command_name)
+    def __init__(self, task, task_name, command_name, _redis):
+        super().__init__(task, task_name, command_name, _redis)
         self.log_signature("INIT")
 
     def run(self, data=None):

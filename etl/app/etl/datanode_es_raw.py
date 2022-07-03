@@ -1,15 +1,19 @@
-from datanode import DataNode
-import os
-import sys
-import requests
 import json
+import os
+
 import backoff
+import requests
 from dotenv import load_dotenv
 
+from datanode import DataNode
 from setup_logging import *
 
 logger = get_logger()
 load_dotenv()
+
+
+def backoff_handler(details):
+    logger.warning("Elasticsearch - Backing off {wait:0.1f} seconds after {tries} tries ".format(**details))
 
 
 class DataNodeES(DataNode):
@@ -36,7 +40,7 @@ class DataNodeES(DataNode):
         for odd in data:
             odd_json = json.dumps(odd)
             query_string = odd_json
-            logger.info(odd_json)
+            # logger.info(odd_json)
 
             response = requests.post(f"{self.ES_SERVER}/movies/_doc/", headers=headers, data=query_string)
             logger.info(response.text)
@@ -47,7 +51,7 @@ class DataNodeES(DataNode):
                 logger.info("RUN DataNodeES -push bulk")
                 bulk_query = ''
                 for odd in data:
-                    even_json = '{"index": {"_index": "'+ self.es_index + '", "_id": "' + odd['id'] + '"}}\n'
+                    even_json = '{"index": {"_index": "' + self.es_index + '", "_id": "' + odd['id'] + '"}}\n'
                     odd_json = json.dumps(odd)
                     bulk_query = bulk_query + even_json + odd_json + '\n'
 
@@ -63,10 +67,7 @@ class DataNodeES(DataNode):
                 logger.info("SKIP DataNodeES - no data")
                 return
 
-    def backoff_hdlr(details):
-        logger.warning("Elasticsearch - Backing off {wait:0.1f} seconds after {tries} tries ".format(**details))
-
-    @backoff.on_exception(backoff.expo, (requests.HTTPError, requests.ConnectionError), on_backoff=backoff_hdlr)
+    @backoff.on_exception(backoff.expo, (requests.HTTPError, requests.ConnectionError), on_backoff=backoff_handler)
     def es_post_query(self, url, headers, data):
         response = requests.post(url, headers=headers, data=data)
         return response

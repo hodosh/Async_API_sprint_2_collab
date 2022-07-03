@@ -1,21 +1,12 @@
 from typing import Any
+from typing import Optional
 
 import orjson
 from pydantic import BaseModel
-from typing import Optional
 
 
 def orjson_dumps(v: Any, *, default: Any) -> str:
     return orjson.dumps(v, default=default).decode()
-
-
-def init_from(new_class, ref_obj):
-    prop = [i for i in ref_obj.__dict__.keys() if i[:1] != '_']
-    new_args = {}
-    for k in prop:
-        new_args[k] = getattr(ref_obj, k)
-    return new_class(**new_args)
-
 
 class ORJSONModel(BaseModel):
     class Config:

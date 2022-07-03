@@ -140,3 +140,10 @@ etl/app/etl/_state/etl_state.json
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/vcs.xml
 /.idea/.gitignore
+
+
+#  database data
+postgres/data/
+elastic_index/data
+
+tests/functional/results

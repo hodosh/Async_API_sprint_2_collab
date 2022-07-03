@@ -8,7 +8,7 @@ MODULE_NAME = "my_module"
 def setup_applevel_logger(logger_name=APP_LOGGER_NAME, file_name=None):
     logger = logging.getLogger(logger_name)
     logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     sh = logging.StreamHandler(sys.stdout)
     sh.setFormatter(formatter)
     logger.handlers.clear()

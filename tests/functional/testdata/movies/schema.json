@@ -48,21 +48,6 @@
       "imdb_rating": {
         "type": "float"
       },
-
-      "title": {
-        "type": "text",
-        "analyzer": "ru_en",
-        "fields": {
-          "raw": { 
-            "type":  "keyword"
-          }
-        }
-      },
-      "description": {
-        "type": "text",
-        "analyzer": "ru_en"
-      },
-
       "genres": {
         "type": "nested",
         "dynamic": "strict",
@@ -76,7 +61,32 @@
           }
         }
       },
-      "directors": {
+      "title": {
+        "type": "text",
+        "analyzer": "ru_en",
+        "fields": {
+          "raw": { 
+            "type":  "keyword"
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "ru_en"
+      },
+      "directors_names": {
+        "type": "text",
+        "analyzer": "ru_en"
+      },
+      "actors_names": {
+        "type": "text",
+        "analyzer": "ru_en"
+      },
+      "writers_names": {
+        "type": "text",
+        "analyzer": "ru_en"
+      },
+      "actors": {
         "type": "nested",
         "dynamic": "strict",
         "properties": {
@@ -89,7 +99,7 @@
           }
         }
       },
-      "actors": {
+      "directors": {
         "type": "nested",
         "dynamic": "strict",
         "properties": {

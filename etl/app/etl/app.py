@@ -1,7 +1,9 @@
 import time
 
-from tasks import TASKS, STAGES
+from app_setup import REDIS_HOST, REDIS_PORT, setup
+from contexts import redis_context
 from setup_logging import *
+from tasks import TASKS, STAGES
 
 logger = setup_applevel_logger()
 
@@ -11,7 +13,7 @@ class ETLApp:
     Приложение ETL
     """
 
-    def __init__(self):
+    def __init__(self, _redis):
         """
         Собираем пайплайн ETL на основании того, как он описан в TASKS
         """
@@ -23,7 +25,7 @@ class ETLApp:
             for command_key in task:
                 cur_stage = task[command_key]['stage']
                 callable_command = STAGES[cur_stage]
-                task_batch[command_key] = callable_command(task, task_key, command_key)
+                task_batch[command_key] = callable_command(task, task_key, command_key, _redis)
 
             self.pipeline.append(task_batch)
 
@@ -36,7 +38,7 @@ class ETLApp:
             # перебираем цепочки задач
             for task_batch in self.pipeline:
                 counter = counter + 1
-                logger.info(f"\n\nLOOP CYCLE {counter} \n\n")
+                # logger.info(f"\n\nLOOP CYCLE {counter} \n\n")
 
                 data = {}
                 task_complete_flag = True
@@ -63,8 +65,17 @@ class ETLApp:
                         task_batch[command_key].rollback(data=data)
 
                 # пауза между командами
-                time.sleep(0.2)
+                time.sleep(1)
 
 
-app = ETLApp()
-app.loop_run()
+if __name__ == '__main__':
+    setup()
+
+    with redis_context(
+            host=REDIS_HOST,
+            port=REDIS_PORT,
+            charset="utf-8",
+            decode_responses=True
+    ) as _redis:
+        app = ETLApp(_redis)
+        app.loop_run()

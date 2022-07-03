@@ -3,5 +3,6 @@ psycopg2
 pytest==6.2.5
 python-dotenv==0.20.0
 requests==2.27.1
-elasticsearch==8.1.0
+elasticsearch==7.17.4
 backoff
+redis==4.3.3
