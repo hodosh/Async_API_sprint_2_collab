@@ -31,13 +31,13 @@ class MovieService:
         return item
 
     async def get_by_query(self, query_body: str) -> Optional[list[ORJSONModel]]:
-        items = await self.redis_service.get(query_body)
+        items = await self.redis_service.get_list(query_body)
         if not items:
             items = await self.elastic_service.get_by_query(query_body)
             if not items:
                 return None
 
-            await self.redis_service.set(query_body, items)
+            await self.redis_service.set_list(query_body, items)
 
         return items
 
