@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Optional
+import typing as t
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -31,7 +31,7 @@ async def genre_details(genre_id: str,
     summary="Genre list",
     description="Fetch all genres"
 )
-async def genre_list(genre_service: MovieService = Depends(get_genre_service)) -> list[GenreShort]:
+async def genre_list(genre_service: MovieService = Depends(get_genre_service)) -> t.List[GenreShort]:
     genres = await genre_service.uber_get()
     if not genres:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Genres not found')
@@ -44,10 +44,10 @@ async def genre_list(genre_service: MovieService = Depends(get_genre_service)) -
     summary="Film by genre ID",
     description="Gets films by given genre"
 )
-async def film_list(genre_id: Optional[str] = None,
-                    page_size: Optional[int] = 50,
-                    page_number: Optional[int] = 1,
-                    film_service: MovieService = Depends(get_film_service)) -> list[FilmShort]:
+async def film_list(genre_id: t.Optional[str] = None,
+                    page_size: t.Optional[int] = 50,
+                    page_number: t.Optional[int] = 1,
+                    film_service: MovieService = Depends(get_film_service)) -> t.List[FilmShort]:
     films = await film_service.uber_get(page_size=page_size,
                                         page_number=page_number,
                                         search_value=genre_id,

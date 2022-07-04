@@ -1,4 +1,4 @@
-from typing import Optional
+import typing as t
 
 from models.models import ORJSONModel
 
@@ -15,26 +15,26 @@ class PersonShort(ORJSONModel):
 
 class Film(ORJSONModel):
     id: str
-    imdb_rating: Optional[float]
-    title: Optional[str]
-    description: Optional[str]
-    genres: Optional[list[GenreShort]]
-    directors: Optional[list[PersonShort]]
-    actors: Optional[list[PersonShort]]
-    writers: Optional[list[PersonShort]]
+    imdb_rating: t.Optional[float]
+    title: t.Optional[str]
+    description: t.Optional[str]
+    genres: t.Optional[t.List[GenreShort]]
+    directors: t.Optional[t.List[PersonShort]]
+    actors: t.Optional[t.List[PersonShort]]
+    writers: t.Optional[t.List[PersonShort]]
 
 
 class FilmShort(ORJSONModel):
     id: str
-    title: Optional[str]
-    imdb_rating: Optional[float]
+    title: t.Optional[str]
+    imdb_rating: t.Optional[float]
 
 
 class FilmMid(ORJSONModel):
     id: str
-    title: Optional[str]
-    imdb_rating: Optional[float]
-    description: Optional[str]
+    title: t.Optional[str]
+    imdb_rating: t.Optional[float]
+    description: t.Optional[str]
 
 
 class FilmIds(ORJSONModel):
@@ -49,10 +49,10 @@ class FilmRoles(ORJSONModel):
 class Person(ORJSONModel):
     id: str
     full_name: str
-    film_roles: list[FilmRoles]
+    film_roles: t.List[FilmRoles]
 
 
 class Genre(ORJSONModel):
     id: str
     name: str
-    description: Optional[str]
+    description: t.Optional[str]

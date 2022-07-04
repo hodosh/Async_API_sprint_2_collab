@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Optional
+import typing as t
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -31,9 +31,9 @@ async def person_details(person_id: str, person_service: MovieService = Depends(
     summary="List all person",
     description=""
 )
-async def person_list(page_size: Optional[int] = 50,
-                      page_number: Optional[int] = 1,
-                      person_service: MovieService = Depends(get_person_service)) -> list[Person]:
+async def person_list(page_size: t.Optional[int] = 50,
+                      page_number: t.Optional[int] = 1,
+                      person_service: MovieService = Depends(get_person_service)) -> t.List[Person]:
     persons = await person_service.uber_get(page_size=page_size,
                                             page_number=page_number
                                             )
@@ -49,10 +49,10 @@ async def person_list(page_size: Optional[int] = 50,
     summary="Full text search person ",
     description="Search over database, search fields is full_name."
 )
-async def person_list(query: Optional[str],
-                      page_size: Optional[int] = 50,
-                      page_number: Optional[int] = 1,
-                      person_service: MovieService = Depends(get_person_service)) -> list[Person]:
+async def person_list(query: t.Optional[str],
+                      page_size: t.Optional[int] = 50,
+                      page_number: t.Optional[int] = 1,
+                      person_service: MovieService = Depends(get_person_service)) -> t.List[Person]:
     persons = await person_service.uber_get(page_size=page_size,
                                             page_number=page_number,
                                             search_value=query,
@@ -69,8 +69,8 @@ async def person_list(query: Optional[str],
     summary="Film by person ID",
     description="Gets films by given person"
 )
-async def film_list(person_id: Optional[str] = None,
-                    film_service: MovieService = Depends(get_film_service)) -> list[FilmShort]:
+async def film_list(person_id: t.Optional[str] = None,
+                    film_service: MovieService = Depends(get_film_service)) -> t.List[FilmShort]:
     films = await film_service.uber_get(search_value=person_id,
                                         property_list=['actors.id', 'directors.id', 'writers.id']
                                         )
