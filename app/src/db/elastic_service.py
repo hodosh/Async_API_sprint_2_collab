@@ -1,8 +1,9 @@
-from typing import Optional
+import typing as t
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 
 from models.models import ORJSONModel
+from utils.common import backoff
 
 
 class ElasticService:
@@ -12,7 +13,8 @@ class ElasticService:
         self.model = model
 
     # получение документа по ID
-    async def get_by_id(self, item_id: str) -> Optional[ORJSONModel]:
+    @backoff()
+    async def get_by_id(self, item_id: str) -> t.Optional[ORJSONModel]:
         try:
             doc = await self.elastic.get(index=self.elastic_index, id=item_id)
         except NotFoundError:
@@ -20,7 +22,8 @@ class ElasticService:
         return self.model(**doc['_source'])
 
     # получение документов по запросу
-    async def get_by_query(self, query_body: str) -> Optional[list[ORJSONModel]]:
+    @backoff()
+    async def get_by_query(self, query_body: str) -> t.Optional[t.List[ORJSONModel]]:
         try:
             raw_result = await self.elastic.search(index=self.elastic_index, doc_type="_doc", body=query_body)
         except NotFoundError:

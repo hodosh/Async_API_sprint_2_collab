@@ -1,4 +1,4 @@
-from typing import Optional
+import typing as t
 
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
@@ -19,7 +19,7 @@ class MovieService:
         self.elastic_service = ElasticService(elastic, elastic_index, model)
         self.redis_service = RedisService(redis, model)
 
-    async def get_by_id(self, item_id: str) -> Optional[ORJSONModel]:
+    async def get_by_id(self, item_id: str) -> t.Optional[ORJSONModel]:
         item = await self.redis_service.get(item_id)
         if not item:
             item = await self.elastic_service.get_by_id(item_id)
@@ -30,7 +30,7 @@ class MovieService:
 
         return item
 
-    async def get_by_query(self, query_body: str) -> Optional[list[ORJSONModel]]:
+    async def get_by_query(self, query_body: str) -> t.Optional[t.List[ORJSONModel]]:
         items = await self.redis_service.get_list(query_body)
         if not items:
             items = await self.elastic_service.get_by_query(query_body)
@@ -41,7 +41,7 @@ class MovieService:
 
         return items
 
-    async def get_by_n_query(self, query_list: list[str]) -> Optional[list[ORJSONModel]]:
+    async def get_by_n_query(self, query_list: t.List[str]) -> t.Optional[t.List[ORJSONModel]]:
         result = []
         for query in query_list:
             tmp = await self.get_by_query(query)
@@ -50,7 +50,7 @@ class MovieService:
 
         return result
 
-    async def get_by_n_property(self, property_list: list[str], property_value,
+    async def get_by_n_property(self, property_list: t.List[str], property_value,
                                 page_size: int = None, page_number: int = None, ):
         query_list = []
         for prop in property_list:
@@ -66,9 +66,9 @@ class MovieService:
     async def uber_get(self, page_size: int = None,
                        page_number: int = None,
                        search_value: str = None,
-                       search_fields: list[str] = None,
+                       search_fields: t.List[str] = None,
                        property_full_path: str = None,
-                       property_list: list[str] = None,
+                       property_list: t.List[str] = None,
                        sort_field: str = None
                        ):
 
@@ -89,14 +89,15 @@ class MovieService:
             q.set_nested_match(parent_property, property_full_path, search_value)
 
         if sort_field is not None:
-            sort_order, sort_field = self.parseOrderField(sort_field)
+            sort_order, sort_field = self.parse_order_field(sort_field)
             q.set_order(sort_field, sort_order)
 
         query_body = q.get_query()
         result = await self.get_by_query(query_body)
         return result
 
-    def parseOrderField(self, field: str):
+    @staticmethod
+    def parse_order_field(field: str):
         if field[0] == "-":
             return 'desc', field[1:]
         else:

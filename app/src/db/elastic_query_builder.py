@@ -1,3 +1,6 @@
+from typing import List
+
+
 class QueryBuilder:
     def __init__(self):
         self.query = {}
@@ -32,7 +35,7 @@ class QueryBuilder:
             }
         }
 
-    def set_fuzzy_query(self, search_string: str, fields: list[str]):
+    def set_fuzzy_query(self, search_string: str, fields: List[str]):
         self.query['query'] = {
             "multi_match": {
                 "query": search_string,
