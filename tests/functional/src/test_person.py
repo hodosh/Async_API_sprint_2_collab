@@ -3,7 +3,7 @@ import pytest
 from http import HTTPStatus
 
 from constants import PERSONS_DATA_PATH_NAME, PERSONS_INDEX_NAME
-from testdata.persons import results
+from testdata.persons import data
 from testdata.redis_data import person_data
 from utils.prepare import pre_tests_actions, post_tests_actions
 
