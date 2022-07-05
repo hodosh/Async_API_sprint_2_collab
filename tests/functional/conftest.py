@@ -111,6 +111,6 @@ def data_loader(es_client):
         if res['errors'] is True:
             raise RuntimeError(f'Something went wrong: {res}')
         # wait for data appears
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.1)
 
     return inner
