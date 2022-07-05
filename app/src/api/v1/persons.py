@@ -3,6 +3,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from api.v1.pagination_shema import PaginationSchema
 from api.v1.view_models import FilmShort, Person
 from services.movie_service import MovieService
 from services.service_locator import get_film_service, get_person_service
@@ -31,12 +32,9 @@ async def person_details(person_id: str, person_service: MovieService = Depends(
     summary="List all person",
     description=""
 )
-async def person_list(page_size: Optional[int] = 50,
-                      page_number: Optional[int] = 1,
+async def person_list(pagination: PaginationSchema = Depends(),
                       person_service: MovieService = Depends(get_person_service)) -> list[Person]:
-    persons = await person_service.uber_get(page_size=page_size,
-                                            page_number=page_number
-                                            )
+    persons = await person_service.uber_get(pagination=pagination)
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found')
 
@@ -50,11 +48,9 @@ async def person_list(page_size: Optional[int] = 50,
     description="Search over database, search fields is full_name."
 )
 async def person_list(query: Optional[str],
-                      page_size: Optional[int] = 50,
-                      page_number: Optional[int] = 1,
+                      pagination: PaginationSchema = Depends(),
                       person_service: MovieService = Depends(get_person_service)) -> list[Person]:
-    persons = await person_service.uber_get(page_size=page_size,
-                                            page_number=page_number,
+    persons = await person_service.uber_get(pagination=pagination,
                                             search_value=query,
                                             search_fields=['full_name']
                                             )
