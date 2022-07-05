@@ -91,3 +91,26 @@ def put_to_redis():
         await redis.set(key, json.dumps(data), expire=60)
 
     return inner
+
+
+@pytest.fixture(scope='function')
+def data_loader(es_client):
+    async def inner(index_name: str, data: t.Union[t.List[t.Dict], t.Dict]):
+        res_data = ''
+
+        if not isinstance(data, list):
+            data = [data]
+
+        for item in data:
+            entity_id = item['id']
+            load = {'index': {'_index': index_name, '_id': entity_id}}
+            res_data += f'{json.dumps(load)}\n{json.dumps(item)}\n'
+
+        res = await es_client.bulk(res_data)
+
+        if res['errors'] is True:
+            raise RuntimeError(f'Something went wrong: {res}')
+        # wait for data appears
+        await asyncio.sleep(0.1)
+
+    return inner

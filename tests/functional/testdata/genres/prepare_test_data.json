@@ -1,8 +1,0 @@
-{ "index" : { "_index" : "test_genres", "_id" : "333333-000000-000000-000000" } }
-{"id": "333333-000000-000000-000000", "name": "Action", "description": null, "film_ids": [{"id": "111111-000000-000000-000001"}, {"id": "111111-000000-000000-000002"}]}
-{ "index" : { "_index" : "test_movies", "_id" : "111111-333333-000000-000000" } }
-{"id" : "111111-333333-000000-000000", "imdb_rating" : 8.6, "title" : "Star Czars", "description" : "bla-bla-bla", "genres" : [{"id" : "333333-000000-000000-000001", "name" : "Reality-TV"}], "directors" : [], "actors" : [], "writers" : []}
-{ "index" : { "_index" : "test_genres", "_id" : "333333-000000-000000-000001" } }
-{"id": "333333-000000-000000-000001", "name": "Reality-TV", "description": null, "film_ids": [{"id": "111111-333333-000000-000000"}]}
-{ "index" : { "_index" : "test_genres", "_id" : "333333-000000-000000-000002" } }
-{"id": "333333-000000-000000-000002", "name": "Reality-TV", "description": null, "film_ids": []}
