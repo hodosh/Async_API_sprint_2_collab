@@ -1,10 +1,14 @@
 import elasticsearch
 import pytest
+from http import HTTPStatus
 
-from constants import GENRES_DATA_PATH_NAME, GENRES_INDEX_NAME
-from testdata.genres import results
+from constants import GENRES_INDEX_NAME, MOVIES_INDEX_NAME
+from testdata.genres import data
 from testdata.redis_data import genre_data
-from utils.prepare import pre_tests_actions, post_tests_actions
+from utils.prepare import pre_tests_actions
+
+# All test coroutines will be treated as marked.
+pytestmark = pytest.mark.asyncio
 
 
 class TestGenre:
@@ -12,64 +16,73 @@ class TestGenre:
     def setup_class(cls):
         # метод, в котором можно определить действия ДО выполнения тестов данного класса
         # например, тут будут создаваться тестовый индекс и загружаться общие для всех тестов тестовые данные
-        pre_tests_actions(data_path_name=GENRES_DATA_PATH_NAME)
+        pre_tests_actions()
 
-    @classmethod
-    def teardown_class(cls):
-        # метод, в котором можно определить действия ПОСЛЕ выполнения тестов данного класса
-        # например, тут будут удаляться общие для всех тестов тестовые данные (чистим за собой мусор)
-        post_tests_actions(data_path_name=GENRES_DATA_PATH_NAME)
-
-    @pytest.mark.asyncio
-    async def test_get_genre_by_id_success(self, make_get_request):
+    async def test_get_genre_by_id_success(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(GENRES_INDEX_NAME, data.base_genre_data)
         # Выполнение запроса
-        genre_id = '333333-000000-000000-000000'
+        genre_id = data.base_genre_data['id']
         response = await make_get_request(f'/genres/{genre_id}')
 
         # Проверка результата
-        assert response.status == 200
+        assert response.status == HTTPStatus.OK
         assert response.body
 
-        assert response.body == results.genre_by_id_result
+        assert response.body == {
+            'id': genre_id,
+            'description': data.base_genre_data['description'],
+            'name': data.base_genre_data['name'],
+        }
 
-    @pytest.mark.asyncio
     async def test_get_not_existing_genre_fail(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request(f'/genres/FAKE')
 
         # Проверка результата
-        assert response.status == 404
+        assert response.status == HTTPStatus.NOT_FOUND
         assert response.body == {'detail': 'Genre not found'}
 
-    @pytest.mark.asyncio
-    async def test_get_genres_list_success(self, make_get_request):
+    async def test_get_genres_list_success(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(GENRES_INDEX_NAME, data.base_genre_data)
         # Выполнение запроса
         response = await make_get_request(f'/genres/')
 
         # Проверка результата
-        assert response.status == 200
+        assert response.status == HTTPStatus.OK
         assert isinstance(response.body, list)
         assert list(response.body[0].keys()) == ['id', 'name']
 
-    @pytest.mark.asyncio
-    async def test_genre_get_film_details_success(self, make_get_request):
+    async def test_genre_get_film_details_success(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(MOVIES_INDEX_NAME, data.film_data)
+        await data_loader(GENRES_INDEX_NAME, data.genre_with_film_details)
+        genre_id = data.genre_with_film_details['id']
         # Выполнение запроса
-        response = await make_get_request('/genres/333333-000000-000000-000001/film/')
+        response = await make_get_request(f'/genres/{genre_id}/film/')
 
         # Проверка результата
-        assert response.status == 200
-        assert response.body == results.genre_detailed_result
+        assert response.status == HTTPStatus.OK
+        assert response.body == [
+            {
+                'id': data.film_data['id'],
+                'title': data.film_data['title'],
+                'imdb_rating': data.film_data['imdb_rating'],
+            },
+        ]
 
-    @pytest.mark.asyncio
-    async def test_genre_get_film_details_fail(self, make_get_request):
+    async def test_genre_get_film_details_fail(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(GENRES_INDEX_NAME, data.genre_without_film_details)
+        genre_id = data.genre_without_film_details['id']
         # Выполнение запроса
-        response = await make_get_request('/genres/333333-000000-000000-000002/film/')
+        response = await make_get_request(f'/genres/{genre_id}/film/')
 
         # Проверка результата
-        assert response.status == 404
+        assert response.status == HTTPStatus.NOT_FOUND
         assert response.body == {'detail': 'film not found'}
 
-    @pytest.mark.asyncio
     async def test_get_genre_by_id_from_cache(self, make_get_request, put_to_redis, es_client):
         # кладем напрямую в редис данные, которых нет в эластике
         await put_to_redis(**genre_data)
@@ -77,10 +90,10 @@ class TestGenre:
         response = await make_get_request(f'/genres/{genre_id}')
 
         # Проверка результата
-        assert response.status == 200
+        assert response.status == HTTPStatus.OK
         assert response.body['id'] == genre_id
 
         # проверим, что данных нет в эластике
         with pytest.raises(elasticsearch.exceptions.NotFoundError) as e:
             await es_client.get(index=GENRES_INDEX_NAME, id=genre_id)
-        assert e.value.args[0] == 404
+        assert e.value.args[0] == HTTPStatus.NOT_FOUND

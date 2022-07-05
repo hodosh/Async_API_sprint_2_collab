@@ -1,10 +1,14 @@
 import elasticsearch
 import pytest
+from http import HTTPStatus
 
-from constants import PERSONS_DATA_PATH_NAME, PERSONS_INDEX_NAME
-from testdata.persons import results
+from constants import PERSONS_INDEX_NAME, MOVIES_INDEX_NAME
+from testdata.persons import data
 from testdata.redis_data import person_data
-from utils.prepare import pre_tests_actions, post_tests_actions
+from utils.prepare import pre_tests_actions
+
+# All test coroutines will be treated as marked.
+pytestmark = pytest.mark.asyncio
 
 
 class TestPerson:
@@ -12,145 +16,151 @@ class TestPerson:
     def setup_class(cls):
         # метод, в котором можно определить действия ДО выполнения тестов данного класса
         # например, тут будут создаваться тестовый индекс и загружаться общие для всех тестов тестовые данные
-        pre_tests_actions(data_path_name=PERSONS_DATA_PATH_NAME)
+        pre_tests_actions()
 
-    @classmethod
-    def teardown_class(cls):
-        # метод, в котором можно определить действия ПОСЛЕ выполнения тестов данного класса
-        # например, тут будут удаляться общие для всех тестов тестовые данные (чистим за собой мусор)
-        post_tests_actions(data_path_name=PERSONS_DATA_PATH_NAME)
-
-    @pytest.mark.asyncio
-    async def test_get_person_by_id_success(self, make_get_request):
+    async def test_get_person_by_id_success(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(PERSONS_INDEX_NAME, data.base_person_data)
         # Выполнение запроса
-        person_id = '222222-000000-000000-000000'
+        person_id = data.base_person_data['id']
         response = await make_get_request(f'/persons/{person_id}')
 
         # Проверка результата
-        assert response.status == 200
+        assert response.status == HTTPStatus.OK
         assert response.body
 
-        assert response.body == results.person_by_id_result
+        assert response.body == data.base_person_data
 
-    @pytest.mark.asyncio
     async def test_get_not_existing_person_fail(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request(f'/persons/FAKE')
 
         # Проверка результата
-        assert response.status == 404
+        assert response.status == HTTPStatus.NOT_FOUND
         assert response.body == {'detail': 'Person not found'}
 
-    @pytest.mark.asyncio
-    async def test_person_search_base_success(self, make_get_request):
+    async def test_person_search_base_success(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(PERSONS_INDEX_NAME, data.person_list_data)
         # Выполнение запроса
         response = await make_get_request(f'/persons/')
 
         # Проверка результата
-        assert response.status == 200
+        assert response.status == HTTPStatus.OK
         # Проверяем, что возвращается список персон
         assert isinstance(response.body, list)
         assert len(response.body) > 0
         # Проверяем ключи возвращенных персон
-        assert list(response.body[0].keys()) == ['id', 'full_name', 'film_roles']
+        assert response.body[0].keys() == data.person_list_data[0].keys()
 
-    @pytest.mark.asyncio
-    async def test_person_search_pagination_success(self, make_get_request):
+    async def test_person_search_pagination_success(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(PERSONS_INDEX_NAME, data.person_list_data)
         # Выполнение запроса
         response = await make_get_request('/persons/?page_size=5&page_number=1')
 
         # Проверка результата
-        assert response.status == 200
+        assert response.status == HTTPStatus.OK
         assert len(response.body) == 5
 
-    @pytest.mark.asyncio
-    async def test_person_search_pagination_wrong_page_fail(self, make_get_request):
+    async def test_person_search_pagination_wrong_page_fail(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(PERSONS_INDEX_NAME, data.person_list_data)
         # Выполнение запроса
         response = await make_get_request('/persons/?page_size=5&page_number=100')
 
         # Проверка результата
-        assert response.status == 404
+        assert response.status == HTTPStatus.NOT_FOUND
         assert response.body == {'detail': 'Person not found'}
 
-    @pytest.mark.asyncio
-    async def test_person_search_pagination_wrong_condition_fail(self, make_get_request):
+    async def test_person_search_pagination_wrong_condition_fail(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(PERSONS_INDEX_NAME, data.person_list_data)
         # Выполнение запроса
         response = await make_get_request('/persons/?page_size=AAAA&page_number=100')
 
         # Проверка результата
-        assert response.status == 422
+        assert response.status == HTTPStatus.UNPROCESSABLE_ENTITY
         assert response.body == {'detail': [{
             'loc': ['query', 'page_size'],
             'msg': 'value is not a valid integer',
             'type': 'type_error.integer',
         }]}
 
-    @pytest.mark.asyncio
     async def test_person_search_by_empty_query_success(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/persons/search')
 
         # Проверка результата
-        assert response.status == 404
+        assert response.status == HTTPStatus.NOT_FOUND
         assert response.body == {'detail': 'Person not found'}
 
-    @pytest.mark.asyncio
     async def test_person_search_query_required_field_fail(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/persons/search/?')
 
         # Проверка результата
-        assert response.status == 422
+        assert response.status == HTTPStatus.UNPROCESSABLE_ENTITY
         assert response.body == {'detail': [{
             'loc': ['query', 'query'],
             'msg': 'field required',
             'type': 'value_error.missing',
         }]}
 
-    @pytest.mark.asyncio
-    async def test_persons_search_by_query_success(self, make_get_request):
+    async def test_persons_search_by_query_success(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(PERSONS_INDEX_NAME, data.person_list_data)
+        keyword = data.person_list_data[0]['full_name'].split(' ')[0]
         # Выполнение запроса
-        response = await make_get_request('/persons/search/?query=person')
+        response = await make_get_request(f'/persons/search/?query={keyword}')
 
         # Проверка результата
-        assert response.status == 200
+        assert response.status == HTTPStatus.OK
         items = response.body
         # Проверяем, что возвращается список персон
         assert isinstance(items, list)
         assert len(items) > 0
         # Проверяем ключи возвращенных персон
-        assert list(items[0].keys()) == ['id', 'full_name', 'film_roles']
+        assert items[0].keys() == data.person_list_data[0].keys()
         # Проверяем, что во всех ответах есть значение из запроса
-        assert len(items) == len([item for item in items if 'person' in item['full_name']])
+        assert len(items) == len([item for item in items if keyword in item['full_name']])
 
-    @pytest.mark.asyncio
     async def test_person_search_by_query_fail(self, make_get_request):
         # Выполнение запроса
         response = await make_get_request('/persons/search/?query=_+-*')
 
         # Проверка результата
-        assert response.status == 404
+        assert response.status == HTTPStatus.NOT_FOUND
         assert response.body == {'detail': 'Person not found'}
 
-    @pytest.mark.asyncio
-    async def test_person_get_details_success(self, make_get_request):
+    async def test_person_get_details_success(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(MOVIES_INDEX_NAME, data.film_data)
+        await data_loader(PERSONS_INDEX_NAME, data.person_detailed_info_data)
+        person_id = data.person_detailed_info_data['id']
         # Выполнение запроса
-        response = await make_get_request('/persons/222222-000000-000000-000011/film/')
+        response = await make_get_request(f'/persons/{person_id}/film/')
 
         # Проверка результата
-        assert response.status == 200
-        assert response.body == results.person_detailed_info
+        assert response.status == HTTPStatus.OK
+        assert response.body == [
+            {
+                'id': data.film_data['id'],
+                'imdb_rating': data.film_data['imdb_rating'],
+                'title': data.film_data['title'],
+            },
+        ]
 
-    @pytest.mark.asyncio
-    async def test_person_get_details_fail(self, make_get_request):
+    async def test_person_get_details_fail(self, make_get_request, data_loader):
+        # загружаем данные
+        await data_loader(PERSONS_INDEX_NAME, data.person_detailed_fail_data)
+        person_id = data.person_detailed_fail_data['id']
         # Выполнение запроса
-        response = await make_get_request('/persons/222222-000000-000000-000012/film/')
-
+        response = await make_get_request(f'/persons/{person_id}/film/')
         # Проверка результата
-        assert response.status == 404
+        assert response.status == HTTPStatus.NOT_FOUND
         assert response.body == {'detail': 'film not found'}
 
-    @pytest.mark.asyncio
     async def test_get_person_by_id_from_cache(self, make_get_request, put_to_redis, es_client):
         # кладем напрямую в редис данные, которых нет в эластике
         await put_to_redis(**person_data)
@@ -158,10 +168,10 @@ class TestPerson:
         response = await make_get_request(f'/persons/{person_id}')
 
         # Проверка результата
-        assert response.status == 200
+        assert response.status == HTTPStatus.OK
         assert response.body['id'] == person_id
 
         # проверим, что данных нет в эластике
         with pytest.raises(elasticsearch.exceptions.NotFoundError) as e:
             await es_client.get(index=PERSONS_INDEX_NAME, id=person_id)
-        assert e.value.args[0] == 404
+        assert e.value.args[0] == HTTPStatus.NOT_FOUND
