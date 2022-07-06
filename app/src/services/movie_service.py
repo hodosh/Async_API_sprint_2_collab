@@ -74,7 +74,7 @@ class MovieService:
                        ):
 
         if property_list is not None:
-            return await self.get_by_n_property(property_list, search_value, page_size, page_number)
+            return await self.get_by_n_property(property_list, search_value, pagination)
 
         q = QueryBuilder()
         q.set_query_match_all()

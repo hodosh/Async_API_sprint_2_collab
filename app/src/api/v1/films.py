@@ -39,7 +39,7 @@ async def film_list(sort: Optional[str] = '-imdb_rating',
 
     if filter_genre is not None:
         films = await film_service.uber_get(pagination=pagination,
-                                            search_value=pagination.filter_genre,
+                                            search_value=filter_genre,
                                             property_full_path='genres.id',
                                             sort_field=sort
                                             )
