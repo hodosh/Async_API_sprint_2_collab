@@ -1,10 +1,13 @@
+from api.v1.pagination_shema import PaginationSchema
+
+
 class QueryBuilder:
     def __init__(self):
         self.query = {}
 
-    def set_pagination(self, page_number, page_size):
-        self.query['from'] = (page_number - 1) * page_size
-        self.query['size'] = page_size
+    def set_pagination(self, pagination: PaginationSchema):
+        self.query['from'] = (pagination.page_number - 1) * pagination.page_size
+        self.query['size'] = pagination.page_size
 
     def set_order(self, field, direction):
         sort_item = {field: {'order': direction}}

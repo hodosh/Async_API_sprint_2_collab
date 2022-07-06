@@ -3,6 +3,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from api.v1.pagination_shema import PaginationSchema
 from api.v1.view_models import FilmShort
 from api.v1.view_models import Genre, GenreShort
 from services.movie_service import MovieService
@@ -45,11 +46,9 @@ async def genre_list(genre_service: MovieService = Depends(get_genre_service)) -
     description="Gets films by given genre"
 )
 async def film_list(genre_id: Optional[str] = None,
-                    page_size: Optional[int] = 50,
-                    page_number: Optional[int] = 1,
+                    pagination: PaginationSchema = Depends(),
                     film_service: MovieService = Depends(get_film_service)) -> list[FilmShort]:
-    films = await film_service.uber_get(page_size=page_size,
-                                        page_number=page_number,
+    films = await film_service.uber_get(pagination=pagination,
                                         search_value=genre_id,
                                         property_full_path='genres.id'
                                         )

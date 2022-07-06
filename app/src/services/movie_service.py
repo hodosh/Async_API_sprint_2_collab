@@ -3,6 +3,7 @@ from typing import Optional
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 
+from api.v1.pagination_shema import PaginationSchema
 from db.elastic_query_builder import QueryBuilder
 from db.elastic_service import ElasticService
 from db.redis_service import RedisService
@@ -50,21 +51,21 @@ class MovieService:
 
         return result
 
-    async def get_by_n_property(self, property_list: list[str], property_value,
-                                page_size: int = None, page_number: int = None, ):
+    async def get_by_n_property(self, property_list: list[str],
+                                property_value,
+                                pagination: PaginationSchema):
         query_list = []
         for prop in property_list:
             q = QueryBuilder()
-            if page_size is not None:
-                q.set_pagination(page_number, page_size)
+            if pagination is not None:
+                q.set_pagination(pagination)
             parent_property = prop.split('.')[0]
             q.set_nested_match(parent_property, prop, property_value)
             query_list.append(q.get_query())
 
         return await self.get_by_n_query(query_list)
 
-    async def uber_get(self, page_size: int = None,
-                       page_number: int = None,
+    async def uber_get(self, pagination: PaginationSchema = None,
                        search_value: str = None,
                        search_fields: list[str] = None,
                        property_full_path: str = None,
@@ -73,13 +74,13 @@ class MovieService:
                        ):
 
         if property_list is not None:
-            return await self.get_by_n_property(property_list, search_value, page_size, page_number)
+            return await self.get_by_n_property(property_list, search_value, pagination)
 
         q = QueryBuilder()
         q.set_query_match_all()
 
-        if (page_number is not None) and (page_size is not None):
-            q.set_pagination(page_number, page_size)
+        if pagination is not None:
+            q.set_pagination(pagination)
 
         if (search_value is not None) and (search_fields is not None):
             q.set_fuzzy_query(search_value, search_fields)
