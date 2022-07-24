@@ -4,6 +4,7 @@ services:
   redis:
     image: redis:6.2.6
     restart: always
+    container_name: redis_async
     expose:
       - '6379'
     command: redis-server --save 20 1 --loglevel warning
@@ -16,6 +17,7 @@ services:
   database:
     image: postgres:13-alpine3.16
     restart: always
+    container_name: async_db
     expose:
       - "5432"
     env_file:
@@ -29,7 +31,7 @@ services:
   elastic:
     image: elasticsearch:7.17.4
     restart: always
-    container_name: elasticsearch
+    container_name: elastic
     expose:
       - "9200"
     volumes:
@@ -53,6 +55,7 @@ services:
   etl:
     build: etl
     restart: always
+    container_name: async_ETL
     env_file:
       - ./etl/app/etl/.env
     environment:
@@ -70,6 +73,7 @@ services:
   app:
     build: app
     restart: always
+    container_name: async_api
     entrypoint: ["gunicorn", "main:app", "--workers", "4", "--worker-class",
                  "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--reload"]
     env_file:
