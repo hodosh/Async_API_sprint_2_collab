@@ -5,11 +5,12 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import films, persons, genres
-from core import config
+from api.v1.middlewares.auth import AuthMiddleware
+from core.config import settings
 from db import elastic, redis
 
 app = FastAPI(
-    title=config.PROJECT_NAME,
+    title=settings.PROJECT_NAME,
     docs_url='/api/v1/openapi',
     openapi_url='/api/v1/openapi.json',
     default_response_class=ORJSONResponse,
@@ -18,8 +19,8 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    redis.redis = await aioredis.create_redis_pool((config.REDIS_HOST, config.REDIS_PORT), minsize=10, maxsize=20)
-    elastic.es = AsyncElasticsearch(hosts=[f'{config.ES_HOST}:{config.ES_PORT}'])
+    redis.redis = await aioredis.create_redis_pool((settings.REDIS_HOST, settings.REDIS_PORT), minsize=10, maxsize=20)
+    elastic.es = AsyncElasticsearch(hosts=[f'{settings.ES_HOST}:{settings.ES_PORT}'])
 
 
 @app.on_event('shutdown')
@@ -33,6 +34,9 @@ async def shutdown():
 app.include_router(films.router, prefix='/api/v1/films', tags=['Film'])
 app.include_router(persons.router, prefix='/api/v1/persons', tags=['Person'])
 app.include_router(genres.router, prefix='/api/v1/genres', tags=['Genre'])
+
+# добавим middleware для проверки токена пользователя в auth api
+app.add_middleware(AuthMiddleware)
 
 if __name__ == '__main__':
     uvicorn.run(

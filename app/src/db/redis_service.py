@@ -1,7 +1,5 @@
-import pickle
-
-from aioredis import Redis
 import orjson
+from aioredis import Redis
 
 from models.models import ORJSONModel
 

@@ -1,26 +1,37 @@
 import os
 from logging import config as logging_config
 
+from pydantic import BaseSettings, Field
+
 from core.logger import LOGGING
 
 # Применяем настройки логирования
 logging_config.dictConfig(LOGGING)
 
-# Название проекта. Используется в Swagger-документации
-PROJECT_NAME = os.getenv('PROJECT_NAME', 'movies')
 
-# Настройки Redis
-REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
-REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+class Settings(BaseSettings):
+    # Название проекта. Используется в Swagger-документации
+    PROJECT_NAME = Field(env='PROJECT_NAME', default='movies')
 
-# Настройки Elasticsearch
-ES_HOST = os.getenv('ES_HOST', '127.0.0.1')
-ES_PORT = int(os.getenv('ES_PORT', 9200))
+    # Настройки Redis
+    REDIS_HOST = Field(env='REDIS_HOST', default='127.0.0.1')
+    REDIS_PORT = Field(env='REDIS_PORT', default=6379)
 
-# Корень проекта
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # Настройки Elasticsearch
+    ES_HOST = Field(env='ES_HOST', default='127.0.0.1')
+    ES_PORT = Field(env='ES_PORT', default=9200)
 
-# Индексы (необходимо уметь задавать для тестов)
-MOVIES_INDEX = os.getenv('MOVIES_INDEX', 'movies')
-GENRES_INDEX = os.getenv('GENRES_INDEX', 'genres')
-PERSONS_INDEX = os.getenv('PERSONS_INDEX', 'persons')
+    # Корень проекта
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    # Индексы (необходимо уметь задавать для тестов)
+    MOVIES_INDEX = Field(env='MOVIES_INDEX', default='movies')
+    GENRES_INDEX = Field(env='GENRES_INDEX', default='genres')
+    PERSONS_INDEX = Field(env='PERSONS_INDEX', default='persons')
+
+    AUTH_API_HOST = Field(env='AUTH_API_HOST', default='127.0.0.1')
+    AUTH_API_PORT = Field(env='AUTH_API_PORT', default=5000)
+    AUTH_API_CHECK_TOKEN_ENDPOINT = Field(env='AUTH_API_CHECK_TOKEN_ENDPOINT', default='/api/v1/users/check_access')
+
+
+settings = Settings()
