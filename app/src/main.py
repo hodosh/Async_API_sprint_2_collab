@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import films, persons, genres
-from api.v1.middlewares.auth import AuthMiddleware
 from core.config import settings
 from db import elastic, redis
 
@@ -34,9 +33,6 @@ async def shutdown():
 app.include_router(films.router, prefix='/api/v1/films', tags=['Film'])
 app.include_router(persons.router, prefix='/api/v1/persons', tags=['Person'])
 app.include_router(genres.router, prefix='/api/v1/genres', tags=['Genre'])
-
-# добавим middleware для проверки токена пользователя в auth api
-app.add_middleware(AuthMiddleware)
 
 if __name__ == '__main__':
     uvicorn.run(

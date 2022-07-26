@@ -1,10 +1,11 @@
 from http import HTTPStatus
 from typing import Optional
 
-from api.v1.utility import validate_order_field, FIELDS_TO_ORDER
-from api.v1.pagination_shema import PaginationSchema
-from api.v1.view_models import Film, FilmShort, FilmMid
 from fastapi import APIRouter, Depends, HTTPException
+
+from api.v1.pagination_shema import PaginationSchema
+from api.v1.utility import validate_order_field, FIELDS_TO_ORDER, token_validation
+from api.v1.view_models import Film, FilmShort, FilmMid
 from services.movie_service import MovieService
 from services.service_locator import get_film_service
 
@@ -24,6 +25,7 @@ async def film_details(film_id: str, film_service: MovieService = Depends(get_fi
 
     return Film.parse_obj(film)
 
+
 @router.get(
     '/',
     summary="List all films with pagination an optional sort and filtering",
@@ -33,7 +35,9 @@ async def film_details(film_id: str, film_service: MovieService = Depends(get_fi
 async def film_list(sort: Optional[str] = '-imdb_rating',
                     pagination: PaginationSchema = Depends(),
                     filter_genre: Optional[str] = None,
-                    film_service: MovieService = Depends(get_film_service)) -> list[FilmShort]:
+                    film_service: MovieService = Depends(get_film_service),
+                    is_authorized: bool = Depends(token_validation)) -> list[FilmShort]:
+    # todo если is_authorized is True, то выдавать все, если нет, то исключить фильмы premium
     if not validate_order_field(sort):
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='order field not found')
 
@@ -61,7 +65,9 @@ async def film_list(sort: Optional[str] = '-imdb_rating',
 )
 async def film_list(query: Optional[str],
                     pagination: PaginationSchema = Depends(),
-                    film_service: MovieService = Depends(get_film_service)) -> list[FilmMid]:
+                    film_service: MovieService = Depends(get_film_service),
+                    is_authorized: bool = Depends(token_validation)) -> list[FilmMid]:
+    # todo если is_authorized is True, то выдавать все, если нет, то исключить фильмы premium
     films = await film_service.uber_get(pagination=pagination,
                                         search_value=query,
                                         search_fields=['title', 'description']

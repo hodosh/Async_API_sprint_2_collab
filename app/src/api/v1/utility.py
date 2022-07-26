@@ -1,3 +1,9 @@
+import aiohttp
+from fastapi.logger import logger
+from flask import Request
+
+from core.config import settings
+
 FIELDS_TO_ORDER = [
     'imdb_rating',
     'title.raw',
@@ -19,3 +25,23 @@ def parseOrderField(field: str):
         return 'desc', field[1:]
     else:
         return 'asc', field
+
+
+async def token_validation(request: Request) -> bool:
+    """
+    Метод для проверки валидности токена.
+    Обращается за проверкой в Auth API.
+    """
+    authorization: str = request.headers.get('Authorization')
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+                f'{settings.AUTH_API_HOST}:{settings.AUTH_API_HOST}/{settings.AUTH_API_CHECK_TOKEN_ENDPOINT}',
+                headers={'Authorization': authorization},
+        ) as response:
+            msg = await response.json()
+
+    if msg.get('message', '').lower() != 'success':
+        logger.warn(f'Validation failed: {msg}')
+        return False
+
+    return True
