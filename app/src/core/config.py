@@ -24,3 +24,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MOVIES_INDEX = os.getenv('MOVIES_INDEX', 'movies')
 GENRES_INDEX = os.getenv('GENRES_INDEX', 'genres')
 PERSONS_INDEX = os.getenv('PERSONS_INDEX', 'persons')
+
+JAEGER_HOST = os.getenv('JAEGER_HOST', '127.0.0.1')
+JAEGER_PORT = os.getenv('JAEGER_PORT', 6831)
