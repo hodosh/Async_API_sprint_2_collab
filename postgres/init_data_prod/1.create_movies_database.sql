@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS content;
 
-CREATE TABLE content.film_work (
-    id uuid NOT NULL,
+CREATE TABLE IF NOT EXISTS content.film_work (
+    id uuid PRIMARY KEY,
     title text NOT NULL,
     description text,
     creation_date date,
@@ -10,7 +10,7 @@ CREATE TABLE content.film_work (
     created timestamp with time zone,
     modified timestamp with time zone,
     certificate character varying(255),
-    "file_path " text,
+    "file_path" text,
     premium boolean
 );
 
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS content.genre (
     name TEXT NOT NULL,
     description TEXT,
     created timestamp with time zone,
-    modified timestamp with time zone,
+    modified timestamp with time zone
 );
 
 CREATE TABLE IF NOT EXISTS content.genre_film_work (

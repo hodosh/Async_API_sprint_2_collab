@@ -27,8 +27,8 @@ SET default_table_access_method = heap;
 -- Name: film_work; Type: TABLE; Schema: content; Owner: app
 --
 
-CREATE TABLE content.film_work (
-    id uuid NOT NULL,
+CREATE TABLE IF NOT EXISTS content.film_work (
+    id uuid PRIMARY KEY,
     title text NOT NULL,
     description text,
     creation_date date,
@@ -37,7 +37,7 @@ CREATE TABLE content.film_work (
     created timestamp with time zone,
     modified timestamp with time zone,
     certificate character varying(255),
-    "file_path " text,
+    "file_path" text,
     premium boolean
 );
 
@@ -50,7 +50,7 @@ ALTER TABLE content.film_work OWNER TO app;
 -- Data for Name: film_work; Type: TABLE DATA; Schema: content; Owner: app
 --
 
-COPY content.film_work (id, title, description, creation_date, rating, type, created, modified, certificate, "file_path ", premium) FROM stdin;
+COPY content.film_work (id, title, description, creation_date, rating, type, created, modified, certificate, "file_path", premium) FROM stdin;
 025c58cd-1b7e-43be-9ffb-8571a613579b	Star Wars: Episode VI - Return of the Jedi	Luke Skywalker battles horrible Jabba the Hut and cruel Darth Vader to save his comrades in the Rebel Alliance and triumph over the Galactic Empire. Han Solo and Princess Leia reaffirm their love and team with Chewbacca, Lando Calrissian, the Ewoks and the androids C-3PO and R2-D2 to aid in the disruption of the Dark Side and the defeat of the evil emperor.	\N	8.3	movie	2021-06-16 20:14:09.221999+00	2021-06-16 20:14:09.222016+00	\N	\N	f
 cddf9b8f-27f9-4fe9-97cb-9e27d4fe3394	Star Wars: Episode VII - The Force Awakens	30 years after the defeat of Darth Vader and the Empire, Rey, a scavenger from the planet Jakku, finds a BB-8 droid that knows the whereabouts of the long lost Luke Skywalker. Rey, as well as a rogue stormtrooper and two smugglers, are thrown into the middle of a battle between the Resistance and the daunting legions of the First Order.	\N	7.9	movie	2021-06-16 20:14:09.222053+00	2021-06-16 20:14:09.222069+00	\N	\N	t
 3b914679-1f5e-4cbd-8044-d13d35d5236c	Star Wars: Episode I - The Phantom Menace	The evil Trade Federation, led by Nute Gunray is planning to take over the peaceful world of Naboo. Jedi Knights Qui-Gon Jinn and Obi-Wan Kenobi are sent to confront the leaders. But not everything goes to plan. The two Jedi escape, and along with their new Gungan friend, Jar Jar Binks head to Naboo to warn Queen Amidala, but droids have already started to capture Naboo and the Queen is not safe there. Eventually, they land on Tatooine, where they become friends with a young boy known as Anakin Skywalker. Qui-Gon is curious about the boy, and sees a bright future for him. The group must now find a way of getting to Coruscant and to finally solve this trade dispute, but there is someone else hiding in the shadows. Are the Sith really extinct? Is the Queen really who she says she is? And what's so special about this young boy?	\N	6.5	movie	2021-06-16 20:14:09.222105+00	2021-06-16 20:14:09.222122+00	\N	\N	f
@@ -1058,8 +1058,8 @@ d0e7e53a-8de1-4a21-b869-4ff8fc0e846e	1983 MLB All-Star Game	\N	\N	6.5	movie	2021
 -- Name: film_work film_work_pkey; Type: CONSTRAINT; Schema: content; Owner: app
 --
 
-ALTER TABLE ONLY content.film_work
-    ADD CONSTRAINT film_work_pkey PRIMARY KEY (id);
+--ALTER TABLE ONLY content.film_work
+--    ADD CONSTRAINT film_work_pkey PRIMARY KEY (id);
 
 
 -- Completed on 2022-08-04 18:13:08 MSK
