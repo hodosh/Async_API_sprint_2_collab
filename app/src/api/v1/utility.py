@@ -1,8 +1,8 @@
-import aiohttp
-from fastapi.logger import logger
-from flask import Request
-
 from core.config import settings
+
+import aiohttp
+from fastapi import Request
+from fastapi.logger import logger
 
 FIELDS_TO_ORDER = [
     'imdb_rating',
