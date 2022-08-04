@@ -56,3 +56,4 @@ class Film(ORJSONModel):
     directors: Optional[list[PersonShort]]
     actors: Optional[list[PersonShort]]
     writers: Optional[list[PersonShort]]
+    premium: bool

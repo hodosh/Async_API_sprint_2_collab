@@ -123,7 +123,6 @@ curl -XPUT http://0.0.0.0:9200/movies -H 'Content-Type: application/json' -d '{
       "imdb_rating": {
         "type": "float"
       },
-
       "title": {
         "type": "text",
         "analyzer": "ru_en",
@@ -137,7 +136,6 @@ curl -XPUT http://0.0.0.0:9200/movies -H 'Content-Type: application/json' -d '{
         "type": "text",
         "analyzer": "ru_en"
       },
-
       "genres": {
         "type": "nested",
         "dynamic": "strict",
@@ -189,6 +187,9 @@ curl -XPUT http://0.0.0.0:9200/movies -H 'Content-Type: application/json' -d '{
             "analyzer": "ru_en"
           }
         }
+      },
+      "premium": {
+        "type": "boolean"
       }
     }
   }
