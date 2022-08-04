@@ -36,7 +36,9 @@ async def film_list(sort: Optional[str] = '-imdb_rating',
                     pagination: PaginationSchema = Depends(),
                     filter_genre: Optional[str] = None,
                     film_service: MovieService = Depends(get_film_service),
-                    is_authorized: bool = Depends(token_validation)) -> list[FilmShort]:
+                    # is_authorized: bool = Depends(token_validation)
+                    is_authorized: bool = True
+                    ) -> list[FilmShort]:
     # todo если is_authorized is True, то выдавать все, если нет, то исключить фильмы premium
     if not validate_order_field(sort):
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='order field not found')
@@ -66,7 +68,9 @@ async def film_list(sort: Optional[str] = '-imdb_rating',
 async def film_list(query: Optional[str],
                     pagination: PaginationSchema = Depends(),
                     film_service: MovieService = Depends(get_film_service),
-                    is_authorized: bool = Depends(token_validation)) -> list[FilmMid]:
+                    # is_authorized: bool = Depends(token_validation)
+                    is_authorized: bool = False
+                    ) -> list[FilmMid]:
     # todo если is_authorized is True, то выдавать все, если нет, то исключить фильмы premium
     films = await film_service.uber_get(pagination=pagination,
                                         search_value=query,
