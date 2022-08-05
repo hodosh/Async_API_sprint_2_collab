@@ -103,7 +103,7 @@ LOAD_COMMAND_MOVIES = {
 TASKS = {
     'update_FILMS_by_films': {
         'fetch_movies': {
-            'sql_query': 'SELECT id, modified, title, description, rating '
+            'sql_query': 'SELECT id, modified, title, description, rating, premium '
                          'FROM content.film_work '
                          'WHERE modified > \'$modified_last\' '
                          'ORDER BY modified '
@@ -138,7 +138,7 @@ TASKS = {
             'depends_on': 'prefetch_person'
         },
         'fetch_movies': {
-            'sql_query': 'SELECT id, modified, title, description, rating '
+            'sql_query': 'SELECT id, modified, title, description, rating, premium '
                          'FROM content.film_work '
                          'WHERE id IN ($list_id) '
                          'ORDER BY modified ',
@@ -171,7 +171,7 @@ TASKS = {
             'depends_on': 'prefetch_genre'
         },
         'fetch_movies': {
-            'sql_query': 'SELECT id, modified, title, description, rating '
+            'sql_query': 'SELECT id, modified, title, description, rating, premium '
                          'FROM content.film_work '
                          'WHERE id IN ($list_id) '
                          'ORDER BY modified ',

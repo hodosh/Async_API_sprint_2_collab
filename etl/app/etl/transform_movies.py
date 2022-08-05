@@ -8,7 +8,7 @@ class TransformMovies(Transform):
     def transform(self, data_table, augment_tables):
         processed_data = []
         for item in data_table:
-            (id_, modified, title, description, rating) = item
+            (id_, modified, title, description, rating, premium) = item
 
             genres_list = self.get_plain_list(augment_tables['genres'][id_])
             actors_names_list = self.get_plain_list(augment_tables['actors'][id_])
@@ -31,7 +31,8 @@ class TransformMovies(Transform):
                    #"writers_names": writers_names_list,
                    "directors": director_full_list,
                    "actors": actors_full_list,
-                   "writers": writers_full_list
+                   "writers": writers_full_list,
+                   "premium": premium
                    }
 
             processed_data.append(odd)
