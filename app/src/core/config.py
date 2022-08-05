@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     REDIS_PORT = Field(env='REDIS_PORT', default=6379)
 
     # Настройки Elasticsearch
-    ES_HOST = Field(env='ES_HOST', default='127.0.0.1')
+    ES_HOST = Field(env='ES_HOST', default='http://127.0.0.1')
     ES_PORT = Field(env='ES_PORT', default=9200)
 
     # Корень проекта
