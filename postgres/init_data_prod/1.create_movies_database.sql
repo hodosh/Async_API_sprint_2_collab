@@ -2,15 +2,16 @@ CREATE SCHEMA IF NOT EXISTS content;
 
 CREATE TABLE IF NOT EXISTS content.film_work (
     id uuid PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT,
-    creation_date DATE,
-    rating FLOAT,
-    type TEXT NOT NULL,
+    title text NOT NULL,
+    description text,
+    creation_date date,
+    rating double precision,
+    type text NOT NULL,
     created timestamp with time zone,
     modified timestamp with time zone,
-    certificate TEXT,
-    file_path TEXT
+    certificate character varying(255),
+    "file_path" text,
+    premium boolean
 );
 
 

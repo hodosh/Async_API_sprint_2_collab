@@ -69,7 +69,7 @@ class ETLApp:
 
 
 if __name__ == '__main__':
-    setup()
+    # setup()
 
     with redis_context(
             host=REDIS_HOST,

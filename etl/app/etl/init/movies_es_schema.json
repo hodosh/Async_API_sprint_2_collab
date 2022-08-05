@@ -112,6 +112,9 @@
             "analyzer": "ru_en"
           }
         }
+      },
+      "premium": {
+        "type": "boolean"
       }
     }
   }

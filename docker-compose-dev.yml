@@ -81,8 +81,8 @@ services:
     depends_on:
       - elastic
       - redis
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     networks:
       - api
 
@@ -141,4 +141,4 @@ networks:
   etl:
     driver: bridge
   api:
-    driver: bridge
+    external: true

@@ -1,5 +1,5 @@
-from typing import Optional, Coroutine, Any
 from abc import ABC, abstractmethod
+from typing import Coroutine, Any
 
 
 class FullTextSearch(ABC):
